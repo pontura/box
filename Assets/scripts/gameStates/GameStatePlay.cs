@@ -6,6 +6,7 @@ namespace Box
     {
         float timer = 0;
         float playSpeed = 1f;
+        float movementLerp = 0.25f;
         public override void Init()
         {
             base.Init();
@@ -66,13 +67,13 @@ namespace Box
         {
             bool hitting = CheckHit(bodyPart, dest);
 
-            if (hitting)
-            {
-                Debug.Log("hittttt");
-                dest = Vector3.Lerp(bodyPart.transform.position, dest, 0.05f);
-            }
+            //if (hitting)
+            //{
+            //    Debug.Log("hittttt");
+            //    dest = Vector3.Lerp(bodyPart.transform.position, dest, 0.05f);
+            //}
 
-            bodyPart.transform.position = Vector3.Lerp(bodyPart.transform.position, new Vector3(dest.x, dest.y, bodyPart.transform.position.z), 0.25f);
+            bodyPart.transform.position = Vector3.Lerp(bodyPart.transform.position, new Vector3(dest.x, dest.y, bodyPart.transform.position.z), movementLerp);
         }
         bool CheckHit(BodyPart bodyPart, Vector2 dest)
         {

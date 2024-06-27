@@ -5,8 +5,8 @@ namespace Box
     public class GameStatePlay : GameState
     {
         float timer = 0;
-        float playSpeed = 1f;
-        float movementLerp = 0.25f;
+        float playSpeed = 0.5f;
+        float movementLerp = 0.02f;
         public override void Init()
         {
             base.Init();
@@ -49,42 +49,74 @@ namespace Box
         }
         void Move(CharacterManager ch, MovementData.Movement m)
         {
+            int keyframeActive = m.keyframeActive;
+            int keyFrame = 0;
             foreach (MovementData.KeyFrameData k in m.keyframes)
             {
                 if (timer < k.time)
                 {
-                    Animate(ch.GetPart(m.part), k.pos);
+                    if(keyframeActive < keyFrame)
+                    {
+                        m.keyframeActive = keyFrame;
+                        ForcePosition(ch.GetPart(m.part), k.pos);
+                        CheckHitOnKeyframe(m, ch.GetPart(m.part), k.pos);
+                    } else
+                        Animate(m, ch.GetPart(m.part), k.pos);
                     return;
                 }
+                keyFrame++;
             }
-
+            ForcePosition(ch.GetPart(m.part), m.keyframes[m.keyframes.Count-1].pos);
+        }
+        void CheckHitOnKeyframe(MovementData.Movement m, BodyPart bodyPart, Vector2 dest)
+        {
+            Vector2 diffPos = CheckHit(bodyPart, dest);
+            if (diffPos != Vector2.zero)
+            {
+                int keyFrame = 0;
+                foreach(MovementData.KeyFrameData k in m.keyframes)
+                {
+                    if (keyFrame >= m.keyframeActive)
+                    {
+                        Vector2 newPos = k.pos - diffPos / 2;
+                        k.pos = GetPos(newPos);
+                    }
+                    keyFrame++;
+                }
+            }
         }
         public override void End()
         {
             base.End();
         }
-        void Animate(BodyPart bodyPart, Vector2 dest)
+        void Animate(MovementData.Movement m, BodyPart bodyPart, Vector2 dest)
         {
-            bool hitting = CheckHit(bodyPart, dest);
-
-            //if (hitting)
-            //{
-            //    Debug.Log("hittttt");
-            //    dest = Vector3.Lerp(bodyPart.transform.position, dest, 0.05f);
-            //}
-
+            dest = GetPos(dest);
             bodyPart.transform.position = Vector3.Lerp(bodyPart.transform.position, new Vector3(dest.x, dest.y, bodyPart.transform.position.z), movementLerp);
         }
-        bool CheckHit(BodyPart bodyPart, Vector2 dest)
+        void ForcePosition(BodyPart bodyPart, Vector2 dest)
+        {
+            dest = GetPos(dest);
+            bodyPart.transform.position = dest;
+        }
+        Vector2 CheckHit(BodyPart bodyPart, Vector2 dest)
         {
             CharacterManager ch;
             if (bodyPart.characterID == 1)
                 ch = gamesStatesManager.GetCharacter(2);
             else
                 ch = gamesStatesManager.GetCharacter(1);
+
             return ch.CheckHit(dest);
         }
-
+        Vector2 GetPos(Vector2 pos)
+        {
+            if (pos.x < -Settings.limits.x) pos.x = -Settings.limits.x;
+            if (pos.x > Settings.limits.x) pos.x = Settings.limits.x;
+            if (pos.y < -Settings.limits.y) pos.y = -Settings.limits.y;
+            if (pos.y > Settings.limits.y) pos.y = Settings.limits.y;
+            return pos;
+        }
     }
 
 }

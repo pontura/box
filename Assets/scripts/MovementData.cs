@@ -16,6 +16,7 @@ namespace Box
         {
             public string part;
             public List<KeyFrameData> keyframes;
+            public int keyframeActive; // to check if is the last frame of keyframe
         }
         [Serializable]
         public class KeyFrameData
@@ -58,20 +59,14 @@ namespace Box
         }
         void SetDataToCharacterID(Movement movement, string[] partsData)
         {
-            Debug.Log(movement);
-            Debug.Log(partsData);
-            Debug.Log(partsData.Length);
-
             foreach (string d in partsData)
             {
-                Debug.Log("d: " + d);
                 if (d != "")
                 {
                     string[] positions = d.Split("*");
 
                     float _x = float.Parse(positions[0]);
                     float _y = float.Parse(positions[1]);
-                    Debug.Log(positions[2]);
                     float time = float.Parse(positions[2]);
 
                     KeyFrameData keyFrame = new KeyFrameData();

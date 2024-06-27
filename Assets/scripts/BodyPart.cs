@@ -15,6 +15,8 @@ namespace Box
         }
         CharacterManager characterManager;
         [SerializeField] Transform ghosts;
+
+        public GameObject[] attachedTo; // A que objeto está attached:
         [SerializeField] DragElement dragElement;
         List<DragElement> draggedElements;
         public int characterID;

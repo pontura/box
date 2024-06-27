@@ -35,7 +35,7 @@ namespace Box.Photon
 
             if (!PhotonNetwork.IsConnected)
             {
-                SceneManager.LoadScene("Launcher");
+                //SceneManager.LoadScene("Launcher");
                 return;
             }
 

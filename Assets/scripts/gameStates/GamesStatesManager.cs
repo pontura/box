@@ -22,7 +22,7 @@ namespace Box
 
         public CharacterManager GetCharacter(int id)
         {
-            if (id == 1) return ch2; else return ch1;
+            if (id == 1) return ch1; else return ch2;
         }
 
         public states state;
@@ -33,6 +33,14 @@ namespace Box
             MOVE_2,
             WAITING,
             PLAY
+        }
+        private void Awake()
+        {
+#if UNITY_EDITOR
+
+#elif UNITY_ANDROID
+            debugMode = false;
+#endif
         }
         void Start()
         {

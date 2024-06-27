@@ -7,6 +7,7 @@ namespace Box
     {
         [SerializeField] Transform lookAtAsset;
         [SerializeField] Transform headAsset;
+        [SerializeField] LineRenderer[] arms;
 
         private void Update()
         {
@@ -16,6 +17,9 @@ namespace Box
             );
             transform.rotation = new Quaternion(0, 0, rotation.z, rotation.w);
 
+
+            arms[0].SetPositions(new Vector3[] { transform.position, attachedTo[0].transform.position });
+            arms[1].SetPositions(new Vector3[] { transform.position, attachedTo[1].transform.position });
         }
     }
 

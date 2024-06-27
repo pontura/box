@@ -71,15 +71,29 @@ namespace Box
                 default: return head;
             }
         }
-        public bool CheckHit(Vector2 pos)
+        public Vector2 CheckHit(Vector2 pos)
         {
-            if (Vector2.Distance(head.transform.position, pos) < 1)
-                return true;
-            else if (Vector2.Distance(hands[0].transform.position, pos) < 1)
-                return true;
-            else if (Vector2.Distance(hands[1].transform.position, pos) < 1)
-                return true;
-            return false;
+            if (Vector2.Distance(head.transform.position, pos) < 1f)
+                return GetVectorBetween(head, pos);
+            else if (Vector2.Distance(hands[0].transform.position, pos) < 1f)
+                return GetVectorBetween(hands[0], pos);
+            else if (Vector2.Distance(hands[1].transform.position, pos) < 1f)
+                return GetVectorBetween(hands[1],  pos);
+            return Vector2.zero;
+        }
+        Vector2 GetVectorBetween(BodyPart bodyPart, Vector2 my)
+        {
+            float _x =  bodyPart.transform.position.x - my.x;
+            float _y =  bodyPart.transform.position.y - my.y;
+            Vector2 v = new Vector2(_x, _y);
+
+            if (bodyPart.type == BodyPart.types.HEAD)
+            {
+                Events.OnHit(bodyPart.characterID, 1);
+                v *= 3;
+            }
+
+            return v;
         }
     }
 }

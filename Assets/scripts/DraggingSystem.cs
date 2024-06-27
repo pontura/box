@@ -1,12 +1,16 @@
+using System.Collections.Generic;
 using UnityEngine;
 namespace Box
 {
     public class DraggingSystem
     {
-        int draws = 0;
-        int totalDraws = 50;
-        float offsetToDraw = 0.2f;
-        float offsetTime = 0.05f;
+        [SerializeField] int draws = 0;
+        [SerializeField] int totalDraws = 50;
+        [SerializeField] float offsetToDraw = 0.2f;
+        [SerializeField] float offsetTime = 0.05f;
+        [SerializeField] float maxDistanceFromAnchor = 5;
+        [SerializeField] float maxDistanceAllowed = 2f; // each movement dragging calculates this
+
         Camera cam;
         Vector2 lastPos;
         Vector2 offset;
@@ -23,11 +27,14 @@ namespace Box
         float timer;
         float timerToDraw;
 
+        List<BodyPart.types> draggedPieces;
+
         public void Init(DBManager dbManager)
         {
             this.dbManager = dbManager;
             draws = 0;
             timer = timerToDraw = 0;
+            draggedPieces = new List<BodyPart.types>();
         }
         System.Action OnDone;
         public void OnReady(System.Action OnDone)
@@ -57,25 +64,41 @@ namespace Box
             if (hit.collider != null)
             {
                 bodyPart = hit.collider.gameObject.GetComponent<BodyPart>();
-
-                Debug.Log(bodyPart.characterID + "  Settings.characterActive " + Settings.characterActive);
-
+              //  Debug.Log(bodyPart.characterID + "  Settings.characterActive " + Settings.characterActive);
                 if (bodyPart.characterID != Settings.characterActive)
                 {
                     bodyPart = null;
                     return false;
                 }
                 if (bodyPart != null)
+                {
                     return true;
+                }
             }
             return false;
+        }
+        void AddToDraggedPieces()
+        {
+            foreach (BodyPart.types t in draggedPieces)
+                if (bodyPart.type == t)
+                    return;
+            draggedPieces.Add(bodyPart.type);
+        }
+        bool NewPieceDragged()
+        {
+            foreach (BodyPart.types t in draggedPieces)
+                if (bodyPart.type == t)
+                    return false;
+            return true;
         }
         void InitDrag()
         {
             Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             lastPos = pos;
             state = states.DRAGGING;
-             timerToDraw = 0;
+            timerToDraw = 0;
+            if (NewPieceDragged())
+                timer = 0;
         }
         void DragElement()
         {
@@ -83,11 +106,32 @@ namespace Box
             if (timerToDraw > offsetTime)
             {
                 timerToDraw = 0;
-                Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                float dist = Vector2.Distance(pos, lastPos);
-                if (dist < offsetToDraw) return;
-                Draw(pos);
+                Vector2 pos = GetPos();
+
+                bool isFarFromAnchor = IsFarFromAttached(pos);
+                if (isFarFromAnchor) return;
+                float distance = Vector2.Distance(pos, lastPos);
+                if (distance < maxDistanceAllowed && distance > offsetToDraw)
+                    Draw(pos);
             }
+        }
+        Vector2 GetPos()
+        {
+            Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            if (pos.x < -Settings.limits.x) pos.x = -Settings.limits.x;
+            if (pos.x > Settings.limits.x) pos.x = Settings.limits.x;
+            if (pos.y < -Settings.limits.y) pos.y = -Settings.limits.y;
+            if (pos.y > Settings.limits.y) pos.y = Settings.limits.y;
+            return pos;
+        }
+        bool IsFarFromAttached(Vector2 pos) // Lmit of body
+        {
+            foreach (GameObject go in bodyPart.attachedTo)
+            {
+                if (Vector2.Distance(pos, go.transform.position) > maxDistanceFromAnchor)
+                    return true;
+            }
+            return false;
         }
         void StopDrag()
         {

@@ -73,11 +73,11 @@ namespace Box
         }
         public Vector2 CheckHit(Vector2 pos)
         {
-            if (Vector2.Distance(head.transform.position, pos) < 1f)
+            if (Vector2.Distance(head.transform.position, pos) < head.hitAreaSize)
                 return GetVectorBetween(head, pos);
-            else if (Vector2.Distance(hands[0].transform.position, pos) < 1f)
+            else if (Vector2.Distance(hands[0].transform.position, pos) < hands[0].hitAreaSize)
                 return GetVectorBetween(hands[0], pos);
-            else if (Vector2.Distance(hands[1].transform.position, pos) < 1f)
+            else if (Vector2.Distance(hands[1].transform.position, pos) < hands[0].hitAreaSize)
                 return GetVectorBetween(hands[1],  pos);
             return Vector2.zero;
         }

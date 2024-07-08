@@ -23,6 +23,7 @@ namespace Box
         SpriteRenderer sr;
         Color color;
         [SerializeField] Vector2 initialPos;
+        public float hitAreaSize;
 
         private void Awake()
         {

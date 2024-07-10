@@ -20,15 +20,15 @@ namespace Box
         [SerializeField] DragElement dragElement;
         List<DragElement> draggedElements;
         public int characterID;
-        SpriteRenderer sr;
+        Material mat;
         Color color;
         [SerializeField] Vector2 initialPos;
         public float hitAreaSize;
 
         private void Awake()
         {
-            sr = GetComponent<SpriteRenderer>();
-            color = sr.color;
+            //mat = GetComponent<Material>();
+            //color = mat.color;
             Events.OnChangeState += OnChangeState;
         }
         private void OnDestroy()
@@ -47,11 +47,12 @@ namespace Box
         void SetAlpha(float alpha)
         {
             color.a = alpha;
-            sr.color = color;
+           // sr.color = color;
         }
 
-        public void Initializa(CharacterManager characterManager)
+        public void Initializa(CharacterManager characterManager, int characterID)
         {
+            this.characterID = characterID;
             draggedElements = new List<DragElement>();
             this.characterManager = characterManager;
         }

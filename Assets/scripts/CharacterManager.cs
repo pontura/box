@@ -17,8 +17,8 @@ namespace Box
         void Start()
         {
             foreach (Hand hand in hands)
-                hand.Initializa(this);
-            head.Initializa(this);
+                hand.Initializa(this, id);
+            head.Initializa(this, id);
         }
         private void OnDestroy()
         {
@@ -90,7 +90,7 @@ namespace Box
             if (bodyPart.type == BodyPart.types.HEAD)
             {
                 Events.OnHit(bodyPart.characterID, 1);
-                v *= 3;
+               // v *= 3;
             }
 
             return v;

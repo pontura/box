@@ -10,35 +10,61 @@ namespace Box.UI
         [SerializeField] GameObject panel;
         [SerializeField] ProgressBar progressBar;
         [SerializeField] ProgressBar progressBar_moves;
+        [SerializeField] ButtonUI readyBtn;
 
         float timer;
         int characterID;
         bool isOn;
         int timerTotal;
+        float totalDistanceToEffort;
+        float onInitRestoreBar;
+        float effort;
 
         private void Awake()
         {
             Events.OnMovementMade += OnMovementMade;
+            readyBtn.Init(OnReadyClicked);
+            totalDistanceToEffort = Settings.totalDistanceToEffort;
+            onInitRestoreBar = Settings.onInitRestoreBar;
+            ResetValues();
+        }
+        void ResetValues()
+        {
+            effort = totalDistanceToEffort;
         }
         private void OnDestroy()
         {
             Events.OnMovementMade -= OnMovementMade;
         }
-
-        private void OnMovementMade(int move, int totalMoves)
+        void OnReadyClicked(int id)
         {
-            if (move > totalMoves)
+            End();
+        }
+        private void OnMovementMade(float distance)
+        {
+            effort -= distance;
+            Debug.Log("distance " + distance + "  effort: " + effort + "  totalDistanceToEffort: " + totalDistanceToEffort);
+            if (effort <= 0)
             {
-                move = totalMoves; End();
+                effort = 0; End();
             }
-            progressBar_moves.SetValue((float)move / (float)totalMoves);
+            SetValues();
+        }
+        void SetValues()
+        {
+            progressBar_moves.SetValue((float)effort / (float)totalDistanceToEffort);
         }
         public void Reset()
         {
             panel.SetActive(false);
         }
-        public void Init(int characterID, int timerTotal)
+        System.Action OnDone;
+        public void Init(int characterID, int timerTotal, System.Action OnDone)
         {
+            Debug.Log("Move Init");
+            this.effort += totalDistanceToEffort * onInitRestoreBar;
+            if (effort > totalDistanceToEffort) effort = totalDistanceToEffort;
+            this.OnDone = OnDone;
             this.timerTotal = timerTotal;
             isOn = true;
             timer = timerTotal;
@@ -52,10 +78,10 @@ namespace Box.UI
                     progressBar_moves.SetColor(Color.blue);
                     break;
             }
-            progressBar_moves.SetValue(0);
             progressBar.SetValue(1);
 
             panel.SetActive(true);
+            SetValues();
         }
         void Update()
         {
@@ -67,9 +93,11 @@ namespace Box.UI
         }
         void End()
         {
+            print("END isOn" + isOn + OnDone);
             if (isOn)
             {
                 isOn = false;
+                OnDone();
             }
         }
         void SetProgress()

@@ -4,12 +4,9 @@ namespace Box
 {
     public class DraggingSystem
     {
-        [SerializeField] int draws = 0;
-        [SerializeField] int totalDraws = 50;
-        [SerializeField] float offsetToDraw = 0.2f;
-        [SerializeField] float offsetTime = 0.05f;
-        [SerializeField] float maxDistanceFromAnchor = 5;
-        [SerializeField] float maxDistanceAllowed = 2f; // each movement dragging calculates this
+        float distanceToEffort;
+        float totalDistanceToEffort, effortByDistance;
+        float offsetToDraw,  offsetTime, maxDistanceFromAnchor, maxDistanceAllowed;
 
         Camera cam;
         Vector2 lastPos;
@@ -25,15 +22,25 @@ namespace Box
         DBManager dbManager;
 
         float timer;
+        float lastMovementTimer;
         float timerToDraw;
 
         List<BodyPart.types> draggedPieces;
 
         public void Init(DBManager dbManager)
         {
+            Debug.Log("Init DraggingSystem");
             this.dbManager = dbManager;
-            draws = 0;
-            timer = timerToDraw = 0;
+
+            this.totalDistanceToEffort = Settings.totalDistanceToEffort;
+            this.offsetToDraw = Settings.offsetToDraw;
+            this.offsetTime = Settings.offsetTime;
+            this.maxDistanceFromAnchor = Settings.maxDistanceFromAnchor;
+            this.maxDistanceAllowed = Settings.maxDistanceAllowed;
+            this.effortByDistance = Settings.effortByDistance;
+
+            distanceToEffort = 0;
+            timer = timerToDraw = lastMovementTimer = 0;
             draggedPieces = new List<BodyPart.types>();
         }
         System.Action OnDone;
@@ -79,6 +86,7 @@ namespace Box
         }
         void AddToDraggedPieces()
         {
+            Debug.Log("AddToDraggedPieces " + draggedPieces.Count);
             foreach (BodyPart.types t in draggedPieces)
                 if (bodyPart.type == t)
                     return;
@@ -97,22 +105,37 @@ namespace Box
             lastPos = pos;
             state = states.DRAGGING;
             timerToDraw = 0;
-            if (NewPieceDragged())
+            Debug.Log("InitDrag " + IsFirstMove() + " timer: " + timer);
+            SetTimer();
+            AddToDraggedPieces();
+        }
+        void SetTimer()
+        {
+            if (IsFirstMove() || bodyPart.type == BodyPart.types.HEAD)
                 timer = 0;
+            else
+                timer = GetLatestMoveOfHand();
+        }
+        float GetLatestMoveOfHand()
+        {
+            return lastMovementTimer;
+        }
+        bool IsFirstMove()
+        {
+            return draggedPieces.Count == 0;
         }
         void DragElement()
         {
             timerToDraw += Time.deltaTime;
             if (timerToDraw > offsetTime)
             {
-                timerToDraw = 0;
                 Vector2 pos = GetPos();
 
                 bool isFarFromAnchor = IsFarFromAttached(pos);
                 if (isFarFromAnchor) return;
                 float distance = Vector2.Distance(pos, lastPos);
                 if (distance < maxDistanceAllowed && distance > offsetToDraw)
-                    Draw(pos);
+                    Draw(distance * effortByDistance, pos);
             }
         }
         Vector2 GetPos()
@@ -142,11 +165,11 @@ namespace Box
             }
             state = states.NONE;
         }
-        private void Draw(Vector2 pos)
+        private void Draw(float distance, Vector2 pos)
         {
-            draws++;
+            distanceToEffort += distance;
             SetDraggedElement(pos);
-            if (draws > totalDraws)
+            if (distanceToEffort > totalDistanceToEffort)
             {
                 Debug.Log("ready");
                 StopDrag();
@@ -155,13 +178,14 @@ namespace Box
                     OnDone();
             }
             else
-                Events.OnMovementMade(draws, totalDraws);
+                Events.OnMovementMade(distance);
         }
         void SetDraggedElement(Vector2 pos)
         {
             lastPos = pos;
             bodyPart.AddGost(lastPos);
             dbManager.SaveMovement(bodyPart.characterID, bodyPart.type.ToString(), pos, timer);
+            if (timer > lastMovementTimer && bodyPart.type != BodyPart.types.HEAD) lastMovementTimer = timer;
         }
     }
 

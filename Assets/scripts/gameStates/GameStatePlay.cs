@@ -4,11 +4,13 @@ namespace Box
 {
     public class GameStatePlay : GameState
     {
-        float timer = 0;
-        float playSpeed = 0.5f;
-        float movementLerp = 0.02f;
+        float timer, playSpeed, movementLerp;
+
         public override void Init()
         {
+            playSpeed = Settings.playSpeed;
+            movementLerp = Settings.movementLerp;
+
             base.Init();
             timer = 0;
             totalDuration = 0;
@@ -74,11 +76,13 @@ namespace Box
             if (diffPos != Vector2.zero)
             {
                 int keyFrame = 0;
+                float recalculations = 1;
                 foreach(MovementData.KeyFrameData k in m.keyframes)
                 {
                     if (keyFrame >= m.keyframeActive)
                     {
-                        Vector2 newPos = k.pos - diffPos / 2;
+                        recalculations += 0.25f;
+                        Vector2 newPos = k.pos - (diffPos / recalculations);
                         k.pos = GetPos(newPos);
                     }
                     keyFrame++;

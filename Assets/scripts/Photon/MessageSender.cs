@@ -15,7 +15,7 @@ namespace Box.Photon
         private void Start()
         {
             photonGameManager = GetComponent<PhotonGameManager>();
-            button.Init(0, Send);
+            button.Init(Send);
             Events.SetText += SetText;
         }
         private void OnDestroy()

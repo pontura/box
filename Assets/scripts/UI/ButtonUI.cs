@@ -7,7 +7,7 @@ public class ButtonUI : MonoBehaviour
     int id;
     System.Action<int> OnClick;
 
-    public void Init(int id, System.Action<int> OnClick)
+    public void Init(System.Action<int> OnClick, int id = 0)
     {
         this.id = id;
         Button button = GetComponent<Button>();

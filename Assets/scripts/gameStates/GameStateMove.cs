@@ -4,7 +4,6 @@ namespace Box
     public class GameStateMove : GameState
     {
         DraggingSystem draggingSystem;
-        int totalTime = 4;
         float timer;
 
         public override void Init()
@@ -14,17 +13,13 @@ namespace Box
             draggingSystem.Init(gamesStatesManager.dbManager);
             draggingSystem.OnReady(Finish);
             base.Init();
-            Events.UIMovement(totalTime);
+            Events.UIMovement(Settings.movementDuration, Finish);
             timer = 0;
         }
         public override void OnUpdate()
         {
             base.OnUpdate();
-            timer += Time.deltaTime;
-            if (timer >= totalTime)
-                Finish();
-            else
-                draggingSystem.OnUpdate();
+            draggingSystem.OnUpdate();
         }
         void Finish()
         {

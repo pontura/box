@@ -46,10 +46,9 @@ namespace Box.UI
 
             }
         }
-
-        private void UIMovement(int totalTime)
+        private void UIMovement(int totalTime, System.Action OnDone)
         {
-            movement.Init(Settings.characterActive, totalTime);
+            movement.Init(Settings.characterActive, totalTime, OnDone);
         }
         void OnMoveSignalDone()
         {

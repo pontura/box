@@ -19,13 +19,15 @@ namespace Box
         {
             headAsset.transform.forward = lookAtAsset.position - transform.position;
 
-            if(characterID == 1 && headAsset.transform.localEulerAngles.y != 90)
+            int eulerY = (int)headAsset.transform.localEulerAngles.y;
+            if (eulerY < 0) eulerY += 360;
+            if (characterID == 1 && eulerY != 90)
             {
                 Vector3 rot = headAsset.transform.localEulerAngles;
                 rot.z = 180;
                 headAsset.transform.localEulerAngles = rot;
             }
-            else if (characterID == 2 && headAsset.transform.localEulerAngles.y != 270)
+            else if (characterID == 2 && eulerY != 270)
             {
                 Vector3 rot = headAsset.transform.localEulerAngles;
                 rot.z = 180;

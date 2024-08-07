@@ -18,7 +18,8 @@ namespace Box.UI
         int timerTotal;
         float totalDistanceToEffort;
         float onInitRestoreBar;
-        float effort;
+        float effort_player1;
+        float effort_player2;
 
         private void Awake()
         {
@@ -26,11 +27,9 @@ namespace Box.UI
             readyBtn.Init(OnReadyClicked);
             totalDistanceToEffort = Settings.totalDistanceToEffort;
             onInitRestoreBar = Settings.onInitRestoreBar;
-            ResetValues();
-        }
-        void ResetValues()
-        {
-            effort = totalDistanceToEffort;
+
+            effort_player1 = totalDistanceToEffort;
+            effort_player2 = totalDistanceToEffort;
         }
         private void OnDestroy()
         {
@@ -40,19 +39,34 @@ namespace Box.UI
         {
             End();
         }
-        private void OnMovementMade(float distance)
+        private void OnMovementMade(int characterID, float distance)
         {
-            effort -= distance;
-         //   Debug.Log("distance " + distance + "  effort: " + effort + "  totalDistanceToEffort: " + totalDistanceToEffort);
-            if (effort <= 0)
+            if (characterID == 1)
             {
-                effort = 0; End();
+                effort_player1 -= distance;
+                if (effort_player1 <= 0)
+                {
+                    End();
+                    effort_player1 = 0;
+                }
             }
-            SetValues();
+            else if (characterID == 2)
+            {
+                effort_player2 -= distance;
+                if (effort_player2 <= 0)
+                {
+                    End();
+                    effort_player2 = 0;
+                }
+            }
+            SetValues(characterID);
         }
-        void SetValues()
+        void SetValues(int characterID)
         {
-            progressBar_moves.SetValue((float)effort / (float)totalDistanceToEffort);
+            if(characterID == 1)
+                progressBar_moves.SetValue((float)effort_player1 / (float)totalDistanceToEffort);
+            else
+                progressBar_moves.SetValue((float)effort_player2 / (float)totalDistanceToEffort);
         }
         public void Reset()
         {
@@ -62,8 +76,17 @@ namespace Box.UI
         public void Init(int characterID, int timerTotal, System.Action OnDone)
         {
             Debug.Log("Move Init");
-            this.effort += totalDistanceToEffort * onInitRestoreBar;
-            if (effort > totalDistanceToEffort) effort = totalDistanceToEffort;
+            if (characterID == 1)
+            {
+                this.effort_player1 += totalDistanceToEffort * onInitRestoreBar;
+                if (effort_player1 > totalDistanceToEffort) effort_player1 = totalDistanceToEffort;
+            }
+            else
+            {
+                this.effort_player2 += totalDistanceToEffort * onInitRestoreBar;
+                if (effort_player2 > totalDistanceToEffort) effort_player2 = totalDistanceToEffort;
+            }
+            Debug.Log("characterID " + characterID + " this.effort_player1: " + this.effort_player1 + "   this.effort_player2: " + this.effort_player2);
             this.OnDone = OnDone;
             this.timerTotal = timerTotal;
             isOn = true;
@@ -81,7 +104,7 @@ namespace Box.UI
             progressBar.SetValue(1);
 
             panel.SetActive(true);
-            SetValues();
+            SetValues(characterID);
         }
         void Update()
         {

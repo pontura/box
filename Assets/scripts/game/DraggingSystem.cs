@@ -178,7 +178,7 @@ namespace Box
                     OnDone();
             }
             else
-                Events.OnMovementMade(distance);
+                Events.OnMovementMade(bodyPart.characterID, distance);
         }
         void SetDraggedElement(Vector2 pos)
         {

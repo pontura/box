@@ -73,17 +73,27 @@ namespace Box
                     {
                         m.keyframeActive = keyFrame;
                         ForcePosition(bodyPart, k.pos);
-                        BodyPart hittedTo = CheckHitTo(bodyPart, k.pos);
-                        if (hittedTo != null)
+                        float force = 0;
+                        if (keyFrame > 0)
                         {
-                            if (hittedTo.type == BodyPart.types.HEAD && !bodyPart.HasHitted())
+                            Vector2 lastPos = m.keyframes[keyFrame - 1].pos;
+                            Vector2 pos = k.pos;
+                            force = Vector2.Distance(lastPos, pos);
+                        }
+                        if (!bodyPart.HasHitted())  {// si ya golpeo la cabeza del otro no cheqeua nada:
+                            BodyPart hittedTo = CheckHitTo(bodyPart, k.pos, force);
+                            if (hittedTo != null)
                             {
-                                bodyPart.MadeHit(true);
-                                ReverseMovements(ch, m, bodyPart);
-                                return;
-                            } else if (hittedTo.type == BodyPart.types.HAND1 || hittedTo.type == BodyPart.types.HAND2)
-                            {
-                                ChangeHandForwards(ch, m, bodyPart, hittedTo);
+                                if (hittedTo.type == BodyPart.types.HEAD)
+                                {
+                                    bodyPart.MadeHit(true);
+                                    ReverseMovements(ch, m, bodyPart);
+                                    return;
+                                }
+                                else if (hittedTo.type == BodyPart.types.HAND1 || hittedTo.type == BodyPart.types.HAND2)
+                                {
+                                    ChangeHandForwards(ch, m, bodyPart, hittedTo);
+                                }
                             }
                         }
                     } else
@@ -110,8 +120,6 @@ namespace Box
                     time += 0.025f*a;
                     newKeyFrame.time = time;
                     m.keyframes.Add(newKeyFrame);
-
-                    Debug.Log("keyframe: " + k1 + " pos: " + k.pos + " time: " + time);
                 }
             }
             Move(m.keyframeActive, ch, m);
@@ -125,13 +133,6 @@ namespace Box
                 k.pos += diffVector;
             }
         }
-        //BodyPart CheckHitOnKeyframe(BodyPart bodyPart, Vector2 dest)
-        //{
-        //    BodyPart hittedTo = CheckHitTo(bodyPart, dest);
-        //    if (hittedTo.type == BodyPart.types.HEAD && !bodyPart.HasHitted()) // HIT!
-        //        return true;
-        //    return hittedTo;
-        //}
         public override void End()
         {
             base.End();
@@ -146,7 +147,7 @@ namespace Box
             dest = GetPos(dest);
             bodyPart.transform.position = dest;
         }
-        BodyPart CheckHitTo(BodyPart bodyPart, Vector2 dest)
+        BodyPart CheckHitTo(BodyPart bodyPart, Vector2 dest, float force)
         {
             CharacterManager chDamaged;
             if (bodyPart.characterID == 1)
@@ -154,7 +155,7 @@ namespace Box
             else
                 chDamaged = gamesStatesManager.GetCharacter(1);
             
-            return chDamaged.CheckHit(dest);
+            return chDamaged.CheckHit(dest, force);
         }
         Vector2 GetPos(Vector2 pos)
         {

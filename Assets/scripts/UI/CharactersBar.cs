@@ -20,8 +20,9 @@ namespace Box.UI
         private void OnHit(int playerID, float power)
         {
             ProgressBar bar = GetPowerbar(playerID);
-            float resta = (float)power / (float)Settings.totalPower;
-            bar.Add(resta);
+            float damage = ((float)power / (float)Settings.totalPower);
+            bar.Add(-damage);
+            Debug.Log("playerID " + playerID + " power: " + power + " bar:" + bar.value + " damage: " + damage);
         }
         ProgressBar GetPowerbar(int playerID)
         {

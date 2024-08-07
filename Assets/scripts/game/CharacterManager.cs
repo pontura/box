@@ -71,11 +71,11 @@ namespace Box
                 default: return head;
             }
         }
-        public BodyPart CheckHit(Vector2 pos)
+        public BodyPart CheckHit(Vector2 pos, float force)
         {
             if (Vector2.Distance(head.transform.position, pos) < head.hitAreaSize)
             {
-                OnHit(head, pos);
+                OnHit(head, pos, force);
                 return head;
             }
             else
@@ -84,18 +84,18 @@ namespace Box
                 Hand hand2 = hands[1];
                 if (Vector2.Distance(hand1.transform.position, pos) < hand1.hitAreaSize)
                 {
-                    OnHit(hand1, pos);
+                    OnHit(hand1, pos, force);
                     return hand1;
                 }
                 else if (Vector2.Distance(hand2.transform.position, pos) < hand2.hitAreaSize)
                 {
-                    OnHit(hand2, pos);
+                    OnHit(hand2, pos, force);
                     return hand2;
                 }
             }
             return null;
         }
-        void OnHit(BodyPart bodyPart, Vector2 my)
+        void OnHit(BodyPart bodyPart, Vector2 my, float force)
         {
             float _x =  bodyPart.transform.position.x - my.x;
             float _y =  bodyPart.transform.position.y - my.y;
@@ -103,8 +103,7 @@ namespace Box
 
             if (bodyPart.type == BodyPart.types.HEAD)
             {
-                float force = (int)Mathf.Abs((v.x + v.y)*100);
-                Events.OnHit(bodyPart.characterID, force);
+                Events.OnHit(bodyPart.characterID, force*500);
                 bodyPart.Hit(my);
             }
         }

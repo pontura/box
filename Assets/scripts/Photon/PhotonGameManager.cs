@@ -102,6 +102,8 @@ namespace Box.Photon
         {
             Debug.Log("OnPlayerLeftRoom() " + other.NickName + " UserID: " + other.UserId); // seen when other disconnects
 
+            SceneManager.LoadScene("Register");
+
             //if (PhotonNetwork.IsMasterClient)
             //{
             //    Events.SetText("OnPlayerEnteredRoom IsMasterClient " + PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
@@ -111,7 +113,7 @@ namespace Box.Photon
         }
         public override void OnLeftRoom()
         {
-            SceneManager.LoadScene("PunBasics-Launcher");
+            SceneManager.LoadScene("Register");
         }
 
         public void LeaveRoom()

@@ -93,7 +93,6 @@ namespace Box.UI
         }
         void End()
         {
-            print("END isOn" + isOn + OnDone);
             if (isOn)
             {
                 isOn = false;

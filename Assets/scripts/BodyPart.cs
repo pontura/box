@@ -100,16 +100,6 @@ namespace Box
         public virtual void Hit(Vector3 pos)   {   }
 
 
-        bool canDamage;
-        public void MadeDamageToEnemy()
-        {
-            canDamage = false;
-        }
-        public bool CanDamage()
-        {
-            return canDamage;
-        }
-
         [SerializeField] bool hitted;
         public bool HasHitted() { return hitted; }
         public void MadeHit(bool hitted) { this.hitted = hitted; }

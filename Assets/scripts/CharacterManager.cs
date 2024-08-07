@@ -71,19 +71,31 @@ namespace Box
                 default: return head;
             }
         }
-        bool canDamage;
-        public Vector2 CheckHit(Vector2 pos, bool canDamage)
+        public BodyPart CheckHit(Vector2 pos)
         {
-            this.canDamage = canDamage;
             if (Vector2.Distance(head.transform.position, pos) < head.hitAreaSize)
-                return GetVectorBetween(head, pos);
-            else if (Vector2.Distance(hands[0].transform.position, pos) < hands[0].hitAreaSize)
-                return GetVectorBetween(hands[0], pos);
-            else if (Vector2.Distance(hands[1].transform.position, pos) < hands[0].hitAreaSize)
-                return GetVectorBetween(hands[1],  pos);
-            return Vector2.zero;
+            {
+                OnHit(head, pos);
+                return head;
+            }
+            else
+            {
+                Hand hand1 = hands[0];
+                Hand hand2 = hands[1];
+                if (Vector2.Distance(hand1.transform.position, pos) < hand1.hitAreaSize)
+                {
+                    OnHit(hand1, pos);
+                    return hand1;
+                }
+                else if (Vector2.Distance(hand2.transform.position, pos) < hand2.hitAreaSize)
+                {
+                    OnHit(hand2, pos);
+                    return hand2;
+                }
+            }
+            return null;
         }
-        Vector2 GetVectorBetween(BodyPart bodyPart, Vector2 my)
+        void OnHit(BodyPart bodyPart, Vector2 my)
         {
             float _x =  bodyPart.transform.position.x - my.x;
             float _y =  bodyPart.transform.position.y - my.y;
@@ -91,16 +103,10 @@ namespace Box
 
             if (bodyPart.type == BodyPart.types.HEAD)
             {
-                if(canDamage)
-                {
-                    float force = (int)Mathf.Abs((v.x + v.y)*100);
-                    Events.OnHit(bodyPart.characterID, force);
-                }
+                float force = (int)Mathf.Abs((v.x + v.y)*100);
+                Events.OnHit(bodyPart.characterID, force);
                 bodyPart.Hit(my);
-               // v *= 3;
             }
-
-            return v;
         }
     }
 }

@@ -73,11 +73,18 @@ namespace Box
                     {
                         m.keyframeActive = keyFrame;
                         ForcePosition(bodyPart, k.pos);
-                        if(CheckHitOnKeyframe(bodyPart, k.pos) && !bodyPart.HasHitted())
+                        BodyPart hittedTo = CheckHitTo(bodyPart, k.pos);
+                        if (hittedTo != null)
                         {
-                            bodyPart.MadeHit(true);
-                            ReverseMovements(ch, m, bodyPart, k.pos, keyFrame);
-                            return;
+                            if (hittedTo.type == BodyPart.types.HEAD && !bodyPart.HasHitted())
+                            {
+                                bodyPart.MadeHit(true);
+                                ReverseMovements(ch, m, bodyPart);
+                                return;
+                            } else if (hittedTo.type == BodyPart.types.HAND1 || hittedTo.type == BodyPart.types.HAND2)
+                            {
+                                ChangeHandForwards(ch, m, bodyPart, hittedTo);
+                            }
                         }
                     } else
                         Animate(m, bodyPart, k.pos);
@@ -87,14 +94,14 @@ namespace Box
             }
             ForcePosition(ch.GetPart(m.part), m.keyframes[m.keyframes.Count-1].pos);
         }
-        void ReverseMovements(CharacterManager ch, MovementData.Movement m, BodyPart bodyPart, Vector2 dest, int keyFrame)
+        void ReverseMovements(CharacterManager ch, MovementData.Movement m, BodyPart bodyPart)
         {
             int totalRewindKeyframes = 12;
-            m.keyframes.RemoveRange(keyFrame+1, m.keyframes.Count - 1 - keyFrame);
-            float time = m.keyframes[keyFrame].time;
+            m.keyframes.RemoveRange(m.keyframeActive + 1, m.keyframes.Count - 1 - m.keyframeActive);
+            float time = m.keyframes[m.keyframeActive].time;
             for (int a = 0; a < totalRewindKeyframes; a++)
             {
-                int k1 = keyFrame - a;
+                int k1 = m.keyframeActive - a;
                 if (k1 > 0)
                 {
                     MovementData.KeyFrameData k = m.keyframes[k1];
@@ -107,22 +114,30 @@ namespace Box
                     Debug.Log("keyframe: " + k1 + " pos: " + k.pos + " time: " + time);
                 }
             }
-            Move(keyFrame, ch, m);
+            Move(m.keyframeActive, ch, m);
         }
-        bool CheckHitOnKeyframe(BodyPart bodyPart, Vector2 dest)
+        void ChangeHandForwards(CharacterManager ch, MovementData.Movement m, BodyPart bodyPart, BodyPart bodyPartHitTo)
         {
-            Vector2 diffPos = CheckHit(bodyPart, dest);
-            if (diffPos != Vector2.zero && !bodyPart.HasHitted()) // HIT!
-                return true;
-            return false;
+            Vector2 diffVector = bodyPart.transform.position - bodyPartHitTo.transform.position;
+            for (int a = m.keyframeActive; a < m.keyframes.Count; a++)
+            {
+                MovementData.KeyFrameData k = m.keyframes[a];
+                k.pos += diffVector;
+            }
         }
+        //BodyPart CheckHitOnKeyframe(BodyPart bodyPart, Vector2 dest)
+        //{
+        //    BodyPart hittedTo = CheckHitTo(bodyPart, dest);
+        //    if (hittedTo.type == BodyPart.types.HEAD && !bodyPart.HasHitted()) // HIT!
+        //        return true;
+        //    return hittedTo;
+        //}
         public override void End()
         {
             base.End();
         }
         void Animate(MovementData.Movement m, BodyPart bodyPart, Vector2 dest)
         {
-            Debug.Log("animate");
             dest = GetPos(dest);
             bodyPart.transform.position = Vector3.Lerp(bodyPart.transform.position, new Vector3(dest.x, dest.y, bodyPart.transform.position.z), movementLerp);
         }
@@ -131,17 +146,15 @@ namespace Box
             dest = GetPos(dest);
             bodyPart.transform.position = dest;
         }
-        Vector2 CheckHit(BodyPart bodyPart, Vector2 dest)
+        BodyPart CheckHitTo(BodyPart bodyPart, Vector2 dest)
         {
             CharacterManager chDamaged;
             if (bodyPart.characterID == 1)
                 chDamaged = gamesStatesManager.GetCharacter(2);
             else
                 chDamaged = gamesStatesManager.GetCharacter(1);
-
-            bool canDamage = bodyPart.CanDamage();
-            Vector2 hitPos = chDamaged.CheckHit(dest, canDamage);
-            return hitPos;
+            
+            return chDamaged.CheckHit(dest);
         }
         Vector2 GetPos(Vector2 pos)
         {

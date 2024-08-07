@@ -36,20 +36,13 @@ namespace Box
             else
                 LookAtOther();
             UpdateArms();
-
-            //if (Input.GetMouseButtonDown(0))
-            //{
-            //    Vector3 v = (Vector3)Input.mousePosition;
-            //    Vector3 v2 =Camera.main.ScreenToWorldPoint(v);
-            //    Hit(v2);
-            //}
         }
         void UpdateHit()
         {
             hitAcceleration -= Time.deltaTime * accel;
             face.transform.RotateAround(face.transform.position, hitVector, hitAcceleration);
             float AngleDiff = Quaternion.Angle(face.transform.rotation, q);
-            if (AngleDiff < 2)
+            if (AngleDiff < 4 || AngleDiff > maxAngleImpact)
                 ResetHit();
         }
         public override void Hit(Vector3 pos)
@@ -98,8 +91,6 @@ namespace Box
         {
             arms[0].SetPositions(new Vector3[] { shoulders[0].transform.position, attachedTo[0].transform.position });
             arms[1].SetPositions(new Vector3[] { shoulders[1].transform.position, attachedTo[1].transform.position });
-
-
         }
     }
 

@@ -43,6 +43,11 @@ namespace Box
                 SetAlpha(0.2f);
             else
                 SetAlpha(1);
+            Reset();
+        }
+        void Reset()
+        {
+            MadeHit(false);
         }
         void SetAlpha(float alpha)
         {
@@ -104,5 +109,9 @@ namespace Box
         {
             return canDamage;
         }
+
+        [SerializeField] bool hitted;
+        public bool HasHitted() { return hitted; }
+        public void MadeHit(bool hitted) { this.hitted = hitted; }
     }
 }

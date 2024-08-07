@@ -44,9 +44,9 @@ namespace Box
             base.OnUpdate();
             timer += Time.deltaTime * playSpeed;
             foreach (MovementData.Movement m in gamesStatesManager.dbManager.ch1.movements)
-                Move(gamesStatesManager.ch1, m);
+                InitMoves(gamesStatesManager.ch1, m);
             foreach (MovementData.Movement m in gamesStatesManager.dbManager.ch2.movements)
-                Move(gamesStatesManager.ch2, m);
+                InitMoves(gamesStatesManager.ch2, m);
 
             if (timer > totalDuration)
                 Finish();
@@ -55,47 +55,66 @@ namespace Box
         {
             gamesStatesManager.PlayModeDone();
         }
-        int keyFrame = 0;
-        void Move(CharacterManager ch, MovementData.Movement m)
+        void InitMoves(CharacterManager ch, MovementData.Movement m)
+        {
+            int keyFrame = 0;
+            Move(keyFrame, ch, m);
+        }
+        void Move(int keyFrame, CharacterManager ch, MovementData.Movement m)
         {
             int keyframeActive = m.keyframeActive;
-            keyFrame = 0;
+            
             foreach (MovementData.KeyFrameData k in m.keyframes)
             {
                 if (timer < k.time)
                 {
-                    if(keyframeActive < keyFrame)
+                    BodyPart bodyPart = ch.GetPart(m.part);
+                    if (keyframeActive < keyFrame)
                     {
                         m.keyframeActive = keyFrame;
-                        ForcePosition(ch.GetPart(m.part), k.pos);
-                        CheckHitOnKeyframe(m, ch.GetPart(m.part), k.pos);
+                        ForcePosition(bodyPart, k.pos);
+                        if(CheckHitOnKeyframe(bodyPart, k.pos) && !bodyPart.HasHitted())
+                        {
+                            bodyPart.MadeHit(true);
+                            ReverseMovements(ch, m, bodyPart, k.pos, keyFrame);
+                            return;
+                        }
                     } else
-                        Animate(m, ch.GetPart(m.part), k.pos);
+                        Animate(m, bodyPart, k.pos);
                     return;
                 }
                 keyFrame++;
             }
             ForcePosition(ch.GetPart(m.part), m.keyframes[m.keyframes.Count-1].pos);
         }
-        void CheckHitOnKeyframe(MovementData.Movement m, BodyPart bodyPart, Vector2 dest)
+        void ReverseMovements(CharacterManager ch, MovementData.Movement m, BodyPart bodyPart, Vector2 dest, int keyFrame)
         {
-            Vector2 diffPos = CheckHit(bodyPart, dest);
-            if (diffPos != Vector2.zero)
+            int totalRewindKeyframes = 12;
+            m.keyframes.RemoveRange(keyFrame+1, m.keyframes.Count - 1 - keyFrame);
+            float time = m.keyframes[keyFrame].time;
+            for (int a = 0; a < totalRewindKeyframes; a++)
             {
-                int keyFrame = 0;
-                float recalculations = 1;
-                foreach(MovementData.KeyFrameData k in m.keyframes)
+                int k1 = keyFrame - a;
+                if (k1 > 0)
                 {
-                    if (keyFrame >= m.keyframeActive)
-                    {
-                        recalculations -= 0.15f;
-                        if (recalculations < 0) recalculations = 0;
-                         Vector2 newPos = k.pos - (diffPos * recalculations);
-                        k.pos = GetPos(newPos);
-                    }
-                    keyFrame++;
+                    MovementData.KeyFrameData k = m.keyframes[k1];
+                    MovementData.KeyFrameData newKeyFrame = new MovementData.KeyFrameData();
+                    newKeyFrame.pos = k.pos;
+                    time += 0.025f*a;
+                    newKeyFrame.time = time;
+                    m.keyframes.Add(newKeyFrame);
+
+                    Debug.Log("keyframe: " + k1 + " pos: " + k.pos + " time: " + time);
                 }
             }
+            Move(keyFrame, ch, m);
+        }
+        bool CheckHitOnKeyframe(BodyPart bodyPart, Vector2 dest)
+        {
+            Vector2 diffPos = CheckHit(bodyPart, dest);
+            if (diffPos != Vector2.zero && !bodyPart.HasHitted()) // HIT!
+                return true;
+            return false;
         }
         public override void End()
         {
@@ -103,6 +122,7 @@ namespace Box
         }
         void Animate(MovementData.Movement m, BodyPart bodyPart, Vector2 dest)
         {
+            Debug.Log("animate");
             dest = GetPos(dest);
             bodyPart.transform.position = Vector3.Lerp(bodyPart.transform.position, new Vector3(dest.x, dest.y, bodyPart.transform.position.z), movementLerp);
         }

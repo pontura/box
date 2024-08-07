@@ -86,7 +86,7 @@ namespace Box
         }
         void AddToDraggedPieces()
         {
-            Debug.Log("AddToDraggedPieces " + draggedPieces.Count);
+          //  Debug.Log("AddToDraggedPieces " + draggedPieces.Count);
             foreach (BodyPart.types t in draggedPieces)
                 if (bodyPart.type == t)
                     return;

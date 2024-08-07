@@ -6,7 +6,7 @@ namespace Box
     {
         public static int characterActive;
         public static int totalPower = 1000;
-        public static Vector2 limits = new Vector2(6.5f, 3);
+        public static Vector2 limits = new Vector2(5.5f, 3.2f);
 
         // DRAG:
         public static int movementDuration = 8;
@@ -20,8 +20,8 @@ namespace Box
         public static float movementLerp = 0.01f;
 
         //EFFORT
-        public static float onInitRestoreBar = 0.2f; // cuanto hace restore la barra de effort por jugada
-        public static float totalDistanceToEffort = 100;
+        public static float onInitRestoreBar = 0.8f; // cuanto hace restore la barra de effort por jugada
+        public static float totalDistanceToEffort = 500;
         public static float effortByDistance = 6;
 
     }

@@ -1,11 +1,15 @@
 using System.Collections;
 using UnityEngine;
+
 namespace Box
 {
     public class GameStatePlay : GameState
     {
         float timer, playSpeed, movementLerp;
-
+        MovementData.KeyFrameData ch1_k;
+        MovementData.KeyFrameData ch2_k;
+        float totalDuration;
+        float delay;
         public override void Init()
         {
             playSpeed = Settings.playSpeed;
@@ -26,15 +30,17 @@ namespace Box
                     if (k.time > totalDuration)
                         totalDuration = k.time;
             }
-            Debug.Log("Total duration : " + totalDuration + "    mov 1: " + gamesStatesManager.dbManager.ch1.movements.Count + "  2: " + gamesStatesManager.dbManager.ch2.movements.Count);
+          //  Debug.Log("Total duration : " + totalDuration + "    mov 1: " + gamesStatesManager.dbManager.ch1.movements.Count + "  2: " + gamesStatesManager.dbManager.ch2.movements.Count);
             totalDuration += 1;
+            delay = 0;
         }
-        MovementData.KeyFrameData ch1_k;
-        MovementData.KeyFrameData ch2_k;
-        float totalDuration;
-
         public override void OnUpdate()
         {
+            if (delay < 1)
+            {
+                delay += Time.deltaTime;
+                return;
+            }
             base.OnUpdate();
             timer += Time.deltaTime * playSpeed;
             foreach (MovementData.Movement m in gamesStatesManager.dbManager.ch1.movements)
@@ -49,10 +55,11 @@ namespace Box
         {
             gamesStatesManager.PlayModeDone();
         }
+        int keyFrame = 0;
         void Move(CharacterManager ch, MovementData.Movement m)
         {
             int keyframeActive = m.keyframeActive;
-            int keyFrame = 0;
+            keyFrame = 0;
             foreach (MovementData.KeyFrameData k in m.keyframes)
             {
                 if (timer < k.time)
@@ -81,8 +88,9 @@ namespace Box
                 {
                     if (keyFrame >= m.keyframeActive)
                     {
-                        recalculations += 0.25f;
-                        Vector2 newPos = k.pos - (diffPos / recalculations);
+                        recalculations -= 0.15f;
+                        if (recalculations < 0) recalculations = 0;
+                         Vector2 newPos = k.pos - (diffPos * recalculations);
                         k.pos = GetPos(newPos);
                     }
                     keyFrame++;
@@ -105,13 +113,15 @@ namespace Box
         }
         Vector2 CheckHit(BodyPart bodyPart, Vector2 dest)
         {
-            CharacterManager ch;
+            CharacterManager chDamaged;
             if (bodyPart.characterID == 1)
-                ch = gamesStatesManager.GetCharacter(2);
+                chDamaged = gamesStatesManager.GetCharacter(2);
             else
-                ch = gamesStatesManager.GetCharacter(1);
+                chDamaged = gamesStatesManager.GetCharacter(1);
 
-            return ch.CheckHit(dest);
+            bool canDamage = bodyPart.CanDamage();
+            Vector2 hitPos = chDamaged.CheckHit(dest, canDamage);
+            return hitPos;
         }
         Vector2 GetPos(Vector2 pos)
         {

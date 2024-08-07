@@ -25,14 +25,14 @@ namespace Box.Photon
 
         private void SetText(string text)
         {
-            print("SetText " + text);
+          //  print("SetText " + text);
             debugField.text += text + "\n";
         }
 
         void Send(int id)
         {
             string s = inputField.text;
-            print("SEND " + s);
+           // print("SEND " + s);
             photonGameManager.SendMessageToOther(s);
         }
         void Receive(string s)

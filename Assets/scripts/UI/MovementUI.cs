@@ -43,7 +43,7 @@ namespace Box.UI
         private void OnMovementMade(float distance)
         {
             effort -= distance;
-            Debug.Log("distance " + distance + "  effort: " + effort + "  totalDistanceToEffort: " + totalDistanceToEffort);
+         //   Debug.Log("distance " + distance + "  effort: " + effort + "  totalDistanceToEffort: " + totalDistanceToEffort);
             if (effort <= 0)
             {
                 effort = 0; End();

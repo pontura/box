@@ -71,8 +71,10 @@ namespace Box
                 default: return head;
             }
         }
-        public Vector2 CheckHit(Vector2 pos)
+        bool canDamage;
+        public Vector2 CheckHit(Vector2 pos, bool canDamage)
         {
+            this.canDamage = canDamage;
             if (Vector2.Distance(head.transform.position, pos) < head.hitAreaSize)
                 return GetVectorBetween(head, pos);
             else if (Vector2.Distance(hands[0].transform.position, pos) < hands[0].hitAreaSize)
@@ -89,7 +91,12 @@ namespace Box
 
             if (bodyPart.type == BodyPart.types.HEAD)
             {
-                Events.OnHit(bodyPart.characterID, 1);
+                if(canDamage)
+                {
+                    float force = (int)Mathf.Abs((v.x + v.y)*100);
+                    Events.OnHit(bodyPart.characterID, force);
+                }
+                bodyPart.Hit(my);
                // v *= 3;
             }
 

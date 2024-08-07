@@ -92,5 +92,17 @@ namespace Box
         {
             characterManager.RecalculatePositions();
         }
+        public virtual void Hit(Vector3 pos)   {   }
+
+
+        bool canDamage;
+        public void MadeDamageToEnemy()
+        {
+            canDamage = false;
+        }
+        public bool CanDamage()
+        {
+            return canDamage;
+        }
     }
 }

@@ -32,6 +32,7 @@ namespace Box.UI
         }
         public void Init(float value, System.Action OnFilled)
         {
+            v = value;
             this.OnFilled = OnFilled;
             SetValue(value);
         }
@@ -44,6 +45,7 @@ namespace Box.UI
         {
             v += value;
             SetValue(v);
+            print(v + " value resta: " + value);
         }      
         private void Update()
         {

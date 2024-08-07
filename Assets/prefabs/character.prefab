@@ -295,6 +295,7 @@ MonoBehaviour:
   hitAreaSize: 1
   lookAtAsset: {fileID: 0}
   headAsset: {fileID: 8127068812955692799}
+  face: {fileID: 7280581211091283167}
   shoulders:
   - {fileID: 4910400414790792817}
   - {fileID: 3370882130361848905}

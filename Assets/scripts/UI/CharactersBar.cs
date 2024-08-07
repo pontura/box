@@ -6,12 +6,10 @@ namespace Box.UI
     {
         [SerializeField] ProgressBar player1;
         [SerializeField] ProgressBar player2;
-        float totalPower;
 
         private void Start()
         {
             Events.OnHit += OnHit;
-            float totalPower = (float)Settings.totalPower;
             player1.SetValue(1);
             player2.SetValue(1);
         }
@@ -22,8 +20,8 @@ namespace Box.UI
         private void OnHit(int playerID, float power)
         {
             ProgressBar bar = GetPowerbar(playerID);
-            float resta =  power / totalPower;
-            bar.Add(-resta);
+            float resta = (float)power / (float)Settings.totalPower;
+            bar.Add(resta);
         }
         ProgressBar GetPowerbar(int playerID)
         {

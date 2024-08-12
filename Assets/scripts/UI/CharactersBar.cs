@@ -4,8 +4,8 @@ namespace Box.UI
 {
     public class CharactersBar : MonoBehaviour
     {
-        [SerializeField] ProgressBar player1;
-        [SerializeField] ProgressBar player2;
+        public ProgressBar player1;
+        public ProgressBar player2;
 
         private void Start()
         {
@@ -22,6 +22,10 @@ namespace Box.UI
             ProgressBar bar = GetPowerbar(playerID);
             float damage = ((float)power / (float)Settings.totalPower);
             bar.Add(-damage);
+
+            if (bar.value <= 0)
+                Events.OnGameOver();
+
             Debug.Log("playerID " + playerID + " power: " + power + " bar:" + bar.value + " damage: " + damage);
         }
         ProgressBar GetPowerbar(int playerID)

@@ -78,19 +78,24 @@ namespace Box
             {
                 Vector3 rot = headAsset.transform.localEulerAngles;
                 rot.z = 180;
+                rot.y = 90;
                 headAsset.transform.localEulerAngles = rot;
             }
             else if (characterID == 2 && (eulerY != 270 || headAsset.transform.localEulerAngles.z == -180))
             {
                 Vector3 rot = headAsset.transform.localEulerAngles;
                 rot.z = 180;
+                rot.y = -90;
                 headAsset.transform.localEulerAngles = rot;
             }
         }
         void UpdateArms()
         {
-            arms[0].SetPositions(new Vector3[] { shoulders[0].transform.position, attachedTo[0].transform.position });
-            arms[1].SetPositions(new Vector3[] { shoulders[1].transform.position, attachedTo[1].transform.position });
+            BodyPart[] all = GetAttachments();
+            for (int a = 0; a < all.Length; a++)
+            {
+                arms[a].SetPositions(new Vector3[] { shoulders[a].transform.position, all[a].transform.position });
+            }
         }
     }
 

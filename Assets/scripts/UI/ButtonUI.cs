@@ -4,6 +4,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))]
 public class ButtonUI : MonoBehaviour
 {
+    public TMPro.TMP_Text field;
     int id;
     System.Action<int> OnClick;
 

@@ -9,6 +9,7 @@ namespace Box
         [SerializeField] int id;
         [SerializeField] Hand[] hands;
         [SerializeField] Head head;
+        GamesStatesManager gamesStatesManager;
 
         void Awake()
         {
@@ -43,12 +44,27 @@ namespace Box
                     break;
             }
         }
-
+        public void Initialize(GamesStatesManager gamesStatesManager)
+        {
+            this.gamesStatesManager = gamesStatesManager;
+        }
         public void Init()
         {
             foreach (Hand hand in hands)
                 hand.Init();
             head.Init();
+        }
+        public void ResetToInit()
+        {
+            foreach (BodyPart b in hands)
+                b.ResetToInit();
+            head.ResetToInit();
+        }
+        public void Reset()
+        {
+            foreach(BodyPart b in hands)
+                b.Reset();
+            head.Reset();
         }
         public void ResetPositions()
         {
@@ -103,7 +119,8 @@ namespace Box
 
             if (bodyPart.type == BodyPart.types.HEAD)
             {
-                Events.OnHit(bodyPart.characterID, force*500);
+                if(gamesStatesManager.state == GamesStatesManager.states.PLAY)
+                    Events.OnHit(bodyPart.characterID, force*500);
                 bodyPart.Hit(my);
             }
         }

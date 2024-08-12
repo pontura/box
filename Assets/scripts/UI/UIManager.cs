@@ -6,21 +6,20 @@ namespace Box.UI
     public class UIManager : MonoBehaviour
     {
         [SerializeField] TMPro.TMP_Text debugText;
-        static UIManager mInstance;
-        static UIManager Instance { get { return mInstance; } }
         MainSignal mainSignal;
 
         [SerializeField] MovementUI movement;
         [SerializeField] PlayMoment playMoment;
+        [SerializeField] GameOverScreen gameOver;
 
         private void Awake()
         {
-            mInstance = this;
             Events.SetText += SetText;
             Events.UIMovement += UIMovement;
             Events.OnChangeState += OnChangeState;
             mainSignal = GetComponent<MainSignal>();
             playMoment = GetComponent<PlayMoment>();
+            gameOver = GetComponent<GameOverScreen>();
         }
         private void OnDestroy()
         {
@@ -35,13 +34,21 @@ namespace Box.UI
             {
                 case GamesStatesManager.states.MOVE_1:
                 case GamesStatesManager.states.MOVE_2:
+                    gameOver.Reset();
                     playMoment.Reset();
                     mainSignal.Init("MOVE!", OnMoveSignalDone);
                     break;
                 case GamesStatesManager.states.PLAY:
+                    gameOver.Reset();
                     movement.Reset();
                     playMoment.Init();
                     mainSignal.Init("ACTION!", OnMoveSignalDone);
+                    break;
+                case GamesStatesManager.states.GAMEOVER:
+                    movement.Reset();
+                    playMoment.Reset();
+                    gameOver.Init();
+                    mainSignal.Init("GAME OVER!", OnMoveSignalDone);
                     break;
 
             }

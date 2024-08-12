@@ -1,34 +1,49 @@
-using System.Collections;
+﻿using System.Collections.Generic;
 using UnityEngine;
-
 namespace Box
 {
-    public class GameStatePlay : GameState
+    public class GameOverState : GameState
     {
         float timer, playSpeed, movementLerp;
         MovementData.KeyFrameData ch1_k;
         MovementData.KeyFrameData ch2_k;
         float totalDuration;
         float delay;
+        bool ended;
 
+        List<string> recorder_ch1;
+        List<string> recorder_ch2;
+
+        int round = 0;
         public override void OnInitialized()
         {
-            Events.OnGameOver += OnGameOver;
         }
         private void OnDestroy()
         {
-            Events.OnGameOver -= OnGameOver;
         }
-        private void OnGameOver()
-        {
-            gamesStatesManager.GameOver();
-        }
+
         public override void Init()
         {
+            ended = false;
+            gamesStatesManager.ch1.ResetToInit();
+            gamesStatesManager.ch2.ResetToInit();
+            recorder_ch1 = gamesStatesManager.dbManager.recorder_ch1;
+            recorder_ch2 = gamesStatesManager.dbManager.recorder_ch2;
             playSpeed = Settings.playSpeed;
             movementLerp = Settings.movementLerp;
-
+            round = 0;
+            delay = 0;
             base.Init();
+            PlayRound(); 
+        }
+        void PlayRound()
+        {
+            gamesStatesManager.ch1.Reset();
+            gamesStatesManager.ch2.Reset();
+
+            Debug.Log("Game over. Round: " + round);
+            gamesStatesManager.dbManager.Reset();
+            gamesStatesManager.dbManager.SetRecorders(round);
             timer = 0;
             totalDuration = 0;
             foreach (MovementData.Movement m in gamesStatesManager.dbManager.ch1.movements)
@@ -43,12 +58,13 @@ namespace Box
                     if (k.time > totalDuration)
                         totalDuration = k.time;
             }
-          //  Debug.Log("Total duration : " + totalDuration + "    mov 1: " + gamesStatesManager.dbManager.ch1.movements.Count + "  2: " + gamesStatesManager.dbManager.ch2.movements.Count);
-            totalDuration += 1;
-            delay = 0;
+            //  Debug.Log("Total duration : " + totalDuration + "    mov 1: " + gamesStatesManager.dbManager.ch1.movements.Count + "  2: " + gamesStatesManager.dbManager.ch2.movements.Count);
+            totalDuration += 0.9f;
+            
         }
         public override void OnUpdate()
         {
+            if (ended) return;
             if (delay < 1)
             {
                 delay += Time.deltaTime;
@@ -62,11 +78,25 @@ namespace Box
                 InitMoves(gamesStatesManager.ch2, m);
 
             if (timer > totalDuration)
-                Finish();
+                FinishMove();
         }
-        void Finish()
+        void FinishMove()
         {
-            gamesStatesManager.PlayModeDone();
+            round++;
+            if (round >= recorder_ch1.Count)
+            {
+                Debug.Log("DONE");
+                ended = true;
+                gamesStatesManager.Invoke("Replay", 2);
+            }
+            else
+            {
+                PlayRound();
+            }
+        }
+        void Replay()
+        {
+            Init();
         }
         void InitMoves(CharacterManager ch, MovementData.Movement m)
         {
@@ -76,7 +106,7 @@ namespace Box
         void Move(int keyFrame, CharacterManager ch, MovementData.Movement m)
         {
             int keyframeActive = m.keyframeActive;
-            
+
             foreach (MovementData.KeyFrameData k in m.keyframes)
             {
                 if (timer < k.time)
@@ -93,7 +123,8 @@ namespace Box
                             Vector2 pos = k.pos;
                             force = Vector2.Distance(lastPos, pos);
                         }
-                        if (!bodyPart.HasHitted())  {// si ya golpeo la cabeza del otro no cheqeua nada:
+                        if (!bodyPart.HasHitted())
+                        {// si ya golpeo la cabeza del otro no cheqeua nada:
                             BodyPart hittedTo = CheckHitTo(bodyPart, k.pos, force);
                             if (hittedTo != null)
                             {
@@ -109,13 +140,14 @@ namespace Box
                                 }
                             }
                         }
-                    } else
+                    }
+                    else
                         Animate(m, bodyPart, k.pos);
                     return;
                 }
                 keyFrame++;
             }
-            ForcePosition(ch.GetPart(m.part), m.keyframes[m.keyframes.Count-1].pos);
+            ForcePosition(ch.GetPart(m.part), m.keyframes[m.keyframes.Count - 1].pos);
         }
         void ReverseMovements(CharacterManager ch, MovementData.Movement m, BodyPart bodyPart)
         {
@@ -130,7 +162,7 @@ namespace Box
                     MovementData.KeyFrameData k = m.keyframes[k1];
                     MovementData.KeyFrameData newKeyFrame = new MovementData.KeyFrameData();
                     newKeyFrame.pos = k.pos;
-                    time += 0.025f*a;
+                    time += 0.025f * a;
                     newKeyFrame.time = time;
                     m.keyframes.Add(newKeyFrame);
                 }
@@ -167,7 +199,7 @@ namespace Box
                 chDamaged = gamesStatesManager.GetCharacter(2);
             else
                 chDamaged = gamesStatesManager.GetCharacter(1);
-            
+
             return chDamaged.CheckHit(dest, force);
         }
         Vector2 GetPos(Vector2 pos)

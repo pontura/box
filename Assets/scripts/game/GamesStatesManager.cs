@@ -1,3 +1,4 @@
+using System;
 using Box.Photon;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ namespace Box
         GameState play;
         GameState wait;
         GameState loading;
+        GameState gameOver;
 
         public DBManager dbManager;
 
@@ -32,27 +34,33 @@ namespace Box
             MOVE_1,
             MOVE_2,
             WAITING,
-            PLAY
+            PLAY,
+            GAMEOVER
         }
         private void Awake()
         {
 #if UNITY_EDITOR
 
-#elif UNITY_ANDROID
+#else
             debugMode = false;
 #endif
         }
         void Start()
         {
+            ch1.Initialize(this);
+            ch2.Initialize(this);
+
             move = new GameStateMove();
             play = new GameStatePlay();
             wait = new GameStateWait();
             loading = new GameStateLoading();
+            gameOver = new GameOverState();
 
             loading.Initialize(this);
             move.Initialize(this);
             play.Initialize(this);
             wait.Initialize(this);
+            gameOver.Initialize(this);
 
             if (debugMode)
                 SetState(states.MOVE_1);
@@ -64,8 +72,8 @@ namespace Box
                     Settings.characterActive = 2;
                 SetState(states.LOADING);
             }
-
         }
+
         void SetState(states state)
         {
             if (active != null)
@@ -84,9 +92,12 @@ namespace Box
                     active = move; break;
                 case states.WAITING:
                     active = wait; break;
+                case states.GAMEOVER:
+                    active = gameOver; break;
 
                 case states.PLAY:
                     dbManager.OnParseMovements();
+                    dbManager.RecordMovements();
                     active = play; break;
             }
             Events.SetText("new state: " + state + " from: " + this.state);
@@ -117,6 +128,11 @@ namespace Box
 
             if (!debugMode)
                 photonGameManager.SendMessageToOther(movementString);
+        }
+        public void GameOver()
+        {
+            SetState(states.GAMEOVER);
+
         }
         public void PlayModeDone()
         {

@@ -8,7 +8,6 @@ namespace Box
         {
             this.gamesStatesManager = gamesStatesManager;
             OnInitialized();
-
         }
         public virtual void OnInitialized() { }
         public virtual void Init() { }

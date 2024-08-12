@@ -287,12 +287,13 @@ MonoBehaviour:
   type: 2
   ghosts: {fileID: 3508350442267109122}
   attachedTo:
-  - {fileID: 6219394116587974482}
-  - {fileID: 3404730613560780029}
+  - {fileID: 4425193696159149056}
+  - {fileID: 4908163103340511856}
   dragElement: {fileID: 8962355593444916608, guid: 647ab2d5fdd0dcb45b2f2463dc6a8e2f, type: 3}
   characterID: 1
   initialPos: {x: 0, y: 0}
   hitAreaSize: 1
+  hitted: 0
   lookAtAsset: {fileID: 0}
   headAsset: {fileID: 8127068812955692799}
   face: {fileID: 7280581211091283167}
@@ -302,6 +303,7 @@ MonoBehaviour:
   arms:
   - {fileID: 8372826439136410499}
   - {fileID: 1734115129773693880}
+  accel: 10
 --- !u!50 &8237963844488553374
 Rigidbody2D:
   serializedVersion: 4
@@ -1072,11 +1074,12 @@ MonoBehaviour:
   type: 0
   ghosts: {fileID: 695810387684726050}
   attachedTo:
-  - {fileID: 702743618797376916}
+  - {fileID: 2798085863390972087}
   dragElement: {fileID: 8962355593444916608, guid: 647ab2d5fdd0dcb45b2f2463dc6a8e2f, type: 3}
   characterID: 1
   initialPos: {x: 0, y: 0}
   hitAreaSize: 0.7
+  hitted: 0
 --- !u!58 &1009922811616292394
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1566,11 +1569,12 @@ MonoBehaviour:
   type: 1
   ghosts: {fileID: 8481784223102860977}
   attachedTo:
-  - {fileID: 702743618797376916}
+  - {fileID: 2798085863390972087}
   dragElement: {fileID: 8962355593444916608, guid: 647ab2d5fdd0dcb45b2f2463dc6a8e2f, type: 3}
   characterID: 1
   initialPos: {x: 0, y: 0}
   hitAreaSize: 0.7
+  hitted: 0
 --- !u!50 &5233737265405775271
 Rigidbody2D:
   serializedVersion: 4

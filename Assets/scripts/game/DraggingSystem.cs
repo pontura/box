@@ -62,7 +62,7 @@ namespace Box
             else if (bodyPart != null && Input.GetMouseButton(0))
                 DragElement();
             else if (Input.GetMouseButtonUp(0))
-                StopDrag();
+                StopDrag(bodyPart);
         }
         bool CheckDrag()
         {
@@ -129,63 +129,64 @@ namespace Box
             timerToDraw += Time.deltaTime;
             if (timerToDraw > offsetTime)
             {
-                Vector2 pos = GetPos();
-
-                bool isFarFromAnchor = IsFarFromAttached(pos);
-                if (isFarFromAnchor) return;
+                Vector2 pos = GetPos(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                
                 float distance = Vector2.Distance(pos, lastPos);
                 if (distance < maxDistanceAllowed && distance > offsetToDraw)
-                    Draw(distance * effortByDistance, pos);
+                    Draw(bodyPart, distance * effortByDistance, pos);
+                CheckAttachments(pos, distance);
             }
         }
-        Vector2 GetPos()
+        Vector2 GetPos(Vector2 pos)
         {
-            Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             if (pos.x < -Settings.limits.x) pos.x = -Settings.limits.x;
             if (pos.x > Settings.limits.x) pos.x = Settings.limits.x;
             if (pos.y < -Settings.limits.y) pos.y = -Settings.limits.y;
             if (pos.y > Settings.limits.y) pos.y = Settings.limits.y;
             return pos;
         }
-        bool IsFarFromAttached(Vector2 pos) // Lmit of body
+        void CheckAttachments(Vector2 pos, float distance) // Lmit of body
         {
-            foreach (GameObject go in bodyPart.attachedTo)
+            foreach (BodyPart bp in bodyPart.GetAttachments())
             {
-                if (Vector2.Distance(pos, go.transform.position) > maxDistanceFromAnchor)
-                    return true;
+                Vector2 gotoPos = pos + (Vector2)bodyPart.transform.position - (Vector2)bp.transform.position;
+                if (Vector2.Distance(pos, bp.transform.position) > maxDistanceFromAnchor)
+                {
+                    Vector2 moveAttachedTo = GetPos(gotoPos);
+                    Draw(bp, distance * effortByDistance, moveAttachedTo);
+                }
             }
-            return false;
         }
-        void StopDrag()
+        void StopDrag(BodyPart _bodyPart)
         {
-            if (bodyPart != null)
+            if (_bodyPart != null)
             {
-                bodyPart.OnEndGrad();
-                bodyPart = null;
+                _bodyPart.OnEndGrad();
+                _bodyPart = null;
             }
             state = states.NONE;
         }
-        private void Draw(float distance, Vector2 pos)
+        private void Draw(BodyPart _bodyPart, float distance, Vector2 pos)
         {
             distanceToEffort += distance;
-            SetDraggedElement(pos);
+            SetDraggedElement(_bodyPart, pos);
             if (distanceToEffort > totalDistanceToEffort)
             {
                 Debug.Log("ready");
-                StopDrag();
+                StopDrag(_bodyPart);
                 state = states.DONE;
                 if (OnDone != null)
                     OnDone();
             }
             else
-                Events.OnMovementMade(bodyPart.characterID, distance);
+                Events.OnMovementMade(_bodyPart.characterID, distance);
         }
-        void SetDraggedElement(Vector2 pos)
+        void SetDraggedElement(BodyPart _bodyPart, Vector2 pos)
         {
             lastPos = pos;
-            bodyPart.AddGost(lastPos);
-            dbManager.SaveMovement(bodyPart.characterID, bodyPart.type.ToString(), pos, timer);
-            if (timer > lastMovementTimer && bodyPart.type != BodyPart.types.HEAD) lastMovementTimer = timer;
+            _bodyPart.AddGost(lastPos);
+            dbManager.SaveMovement(_bodyPart.characterID, _bodyPart.type.ToString(), pos, timer);
+            if (timer > lastMovementTimer && _bodyPart.type != BodyPart.types.HEAD) lastMovementTimer = timer;
         }
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 namespace Box
 {
@@ -8,6 +9,9 @@ namespace Box
 
         public MovementData.CharacterData ch1;
         public MovementData.CharacterData ch2;
+
+        public List<string> recorder_ch1;
+        public List<string> recorder_ch2;
 
         string active_part;
         MovementData movementData;
@@ -30,6 +34,12 @@ namespace Box
                 dataSaved_2 = movement;
             else
                 dataSaved = movement;
+        }
+        public void SetRecorders(int round)
+        {
+            dataSaved = recorder_ch1[round];
+            dataSaved_2 = recorder_ch2[round];
+            OnParseMovements();
         }
         public void Reset()
         {
@@ -72,6 +82,11 @@ namespace Box
         {
             ch1 = movementData.SetDataToCharacter(dataSaved);
             ch2 = movementData.SetDataToCharacter(dataSaved_2);
+        }
+        public void RecordMovements()
+        {
+            recorder_ch1.Add(dataSaved);
+            recorder_ch2.Add(dataSaved_2);
         }
         public bool MovementsDone()
         {

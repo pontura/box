@@ -185,12 +185,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dd5a341e27436c4d83057a6d133f057, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0
-  type: 0
-  state: 0
   image: {fileID: 1094357734775550348}
   percentField: {fileID: 2101122947197580319}
-  widthValue: 270
+  value: 0
 --- !u!1 &6998630593492734272
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,7 +321,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.09803922}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

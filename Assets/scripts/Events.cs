@@ -10,6 +10,7 @@ namespace Box
         public static System.Action<int, float> OnMovementMade = delegate { };
         public static System.Action<GamesStatesManager.states> OnChangeState = delegate { };
         public static System.Action<int,System.Action> UIMovement = delegate { };
+        public static System.Action<Vector2, BodyPart> SetMovementSignal = delegate { };
 
     }
 }

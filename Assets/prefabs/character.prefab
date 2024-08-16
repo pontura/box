@@ -293,6 +293,7 @@ MonoBehaviour:
   characterID: 1
   initialPos: {x: 0, y: 0}
   hitAreaSize: 1
+  hitted: 0
   lookAtAsset: {fileID: 0}
   headAsset: {fileID: 8127068812955692799}
   face: {fileID: 7280581211091283167}
@@ -302,6 +303,7 @@ MonoBehaviour:
   arms:
   - {fileID: 8372826439136410499}
   - {fileID: 1734115129773693880}
+  accel: 10
 --- !u!50 &8237963844488553374
 Rigidbody2D:
   serializedVersion: 4
@@ -389,7 +391,7 @@ Transform:
   m_GameObject: {fileID: 893155859517013880}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -1, y: 0, z: 6.650001}
+  m_LocalPosition: {x: -1, y: 0, z: 1}
   m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1077,6 +1079,7 @@ MonoBehaviour:
   characterID: 1
   initialPos: {x: 0, y: 0}
   hitAreaSize: 0.7
+  hitted: 0
 --- !u!58 &1009922811616292394
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1571,6 +1574,7 @@ MonoBehaviour:
   characterID: 1
   initialPos: {x: 0, y: 0}
   hitAreaSize: 0.7
+  hitted: 0
 --- !u!50 &5233737265405775271
 Rigidbody2D:
   serializedVersion: 4

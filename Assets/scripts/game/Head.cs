@@ -70,22 +70,10 @@ namespace Box
         }
         void LookAtOther()
         {
-            headAsset.transform.forward = lookAtAsset.position - transform.position;
-
-            int eulerY = (int)headAsset.transform.localEulerAngles.y;
-            if (eulerY < 0) eulerY += 360;
-            if (characterID == 1 && (eulerY != 90 || headAsset.transform.localEulerAngles.z == -180))
-            {
-                Vector3 rot = headAsset.transform.localEulerAngles;
-                rot.z = 180;
-                headAsset.transform.localEulerAngles = rot;
-            }
-            else if (characterID == 2 && (eulerY != 270 || headAsset.transform.localEulerAngles.z == -180))
-            {
-                Vector3 rot = headAsset.transform.localEulerAngles;
-                rot.z = 180;
-                headAsset.transform.localEulerAngles = rot;
-            }
+            Vector3 directionToTarget = lookAtAsset.position - transform.position;
+            float angle = Mathf.Atan2(directionToTarget.y, directionToTarget.x) * Mathf.Rad2Deg;
+            Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+            headAsset.transform.rotation = targetRotation;
         }
         void UpdateArms()
         {

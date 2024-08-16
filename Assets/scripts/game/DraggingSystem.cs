@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
+using UnityEditor;
 using UnityEngine;
 namespace Box
 {
@@ -38,6 +40,7 @@ namespace Box
             this.maxDistanceFromAnchor = Settings.maxDistanceFromAnchor;
             this.maxDistanceAllowed = Settings.maxDistanceAllowed;
             this.effortByDistance = Settings.effortByDistance;
+            maxDistanceFromAnchor = 0.25f;
 
             distanceToEffort = 0;
             timer = timerToDraw = lastMovementTimer = 0;
@@ -131,8 +134,8 @@ namespace Box
             {
                 Vector2 pos = GetPos();
 
-                bool isFarFromAnchor = IsFarFromAttached(pos);
-                if (isFarFromAnchor) return;
+                //bool isFarFromAnchor = IsFarFromAttached();
+                //if (isFarFromAnchor) return;
                 float distance = Vector2.Distance(pos, lastPos);
                 if (distance < maxDistanceAllowed && distance > offsetToDraw)
                     Draw(distance * effortByDistance, pos);
@@ -147,19 +150,38 @@ namespace Box
             if (pos.y > Settings.limits.y) pos.y = Settings.limits.y;
             return pos;
         }
-        bool IsFarFromAttached(Vector2 pos) // Lmit of body
+        bool IsFarFromAttached() // Lmit of body
         {
-            foreach (GameObject go in bodyPart.attachedTo)
+            Debug.Log("IsFarFromAttached");
+            Vector2 pos = bodyPart.transform.position;
+            foreach (BodyPart go in bodyPart.attachedTo)
             {
+                Debug.Log("distance is. " + Vector2.Distance(pos, go.transform.position));
                 if (Vector2.Distance(pos, go.transform.position) > maxDistanceFromAnchor)
                     return true;
             }
+
+            Debug.Log("IsFarFromAttached no");
             return false;
+        }
+        void AddReverse()
+        {
+            BodyPart bp = bodyPart.attachedTo[0];
+            Vector2 pos = bp.transform.position;
+            pos += (Vector2)bodyPart.transform.forward.normalized * 2f;
+            SetDraggedElement(pos);
+            Debug.Log("AddReverse " + pos);
         }
         void StopDrag()
         {
+            
             if (bodyPart != null)
             {
+                if (bodyPart.type != BodyPart.types.HEAD && IsFarFromAttached())
+                {
+                    AddReverse();
+                }
+
                 bodyPart.OnEndGrad();
                 bodyPart = null;
             }

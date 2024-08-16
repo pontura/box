@@ -22,7 +22,7 @@ namespace Box
         //EFFORT
         public static float onInitRestoreBar = 0.3f; // cuanto hace restore la barra de effort por jugada
         public static float totalDistanceToEffort = 200;
-        public static float effortByDistance = 50;
+        public static float effortByDistance = 10;
 
     }
 

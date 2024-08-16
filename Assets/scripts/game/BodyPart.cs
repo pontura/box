@@ -13,10 +13,12 @@ namespace Box
             HAND2,
             HEAD
         }
+        Collider2D collider;
         CharacterManager characterManager;
         [SerializeField] Transform ghosts;
 
-        public GameObject[] attachedTo; // A que objeto está attached:
+        public BodyPart[] attachedTo; // A que objeto está attached:
+        public BodyPart[] GetAttachments() { return attachedTo; }
         [SerializeField] DragElement dragElement;
         List<DragElement> draggedElements;
         public int characterID;
@@ -24,12 +26,14 @@ namespace Box
         Color color;
         [SerializeField] Vector2 initialPos;
         public float hitAreaSize;
-
+        Vector3 originalPos;
         private void Awake()
         {
             //mat = GetComponent<Material>();
             //color = mat.color;
             Events.OnChangeState += OnChangeState;
+            collider = GetComponent<Collider2D>();
+            originalPos = transform.position;
         }
         private void OnDestroy()
         {
@@ -38,23 +42,24 @@ namespace Box
         private void OnChangeState(GamesStatesManager.states state)
         {
             if (state == GamesStatesManager.states.PLAY)
-                SetAlpha(1);
-            else if (Settings.characterActive != characterID)
-                SetAlpha(0.2f);
-            else
-                SetAlpha(1);
+                SetDrag(false);
+            else if (Settings.characterActive == characterID)
+                SetDrag(true);
             Reset();
         }
-        void Reset()
+        public void ResetToInit()
+        {
+            transform.position = originalPos;
+        }
+        public void Reset()
         {
             MadeHit(false);
         }
-        void SetAlpha(float alpha)
+        void SetDrag(bool isOn)
         {
-            color.a = alpha;
-           // sr.color = color;
+            collider.enabled = isOn;
+            Events.SetMovementSignal(transform.position, this);
         }
-
         public void Initializa(CharacterManager characterManager, int characterID)
         {
             this.characterID = characterID;
@@ -97,7 +102,7 @@ namespace Box
         {
             characterManager.RecalculatePositions();
         }
-        public virtual void Hit(Vector3 pos)   {   }
+        public virtual void Hit(Vector3 pos) { }
 
 
         [SerializeField] bool hitted;

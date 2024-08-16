@@ -4,8 +4,8 @@ namespace Box.UI
 {
     public class CharactersBar : MonoBehaviour
     {
-        [SerializeField] ProgressBar player1;
-        [SerializeField] ProgressBar player2;
+        public ProgressBar player1;
+        public ProgressBar player2;
 
         private void Start()
         {

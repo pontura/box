@@ -76,9 +76,12 @@ namespace Box
                         float force = 0;
                         if (keyFrame > 0)
                         {
-                            Vector2 lastPos = m.keyframes[keyFrame - 1].pos;
-                            Vector2 pos = k.pos;
-                            force = Vector2.Distance(lastPos, pos);
+                            if (keyFrame - 1 < m.keyframes.Count)
+                            {
+                                Vector2 lastPos = m.keyframes[keyFrame - 1].pos;
+                                Vector2 pos = k.pos;
+                                force = Vector2.Distance(lastPos, pos);
+                            }
                         }
                         if (!bodyPart.HasHitted())  {// si ya golpeo la cabeza del otro no cheqeua nada:
                             BodyPart hittedTo = CheckHitTo(bodyPart, k.pos, force);

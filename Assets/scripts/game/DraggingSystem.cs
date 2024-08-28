@@ -150,20 +150,20 @@ namespace Box
             if (pos.y > Settings.limits.y) pos.y = Settings.limits.y;
             return pos;
         }
-        bool IsFarFromAttached() // Lmit of body
-        {
-            Debug.Log("IsFarFromAttached");
-            Vector2 pos = bodyPart.transform.position;
-            foreach (BodyPart go in bodyPart.attachedTo)
-            {
-                Debug.Log("distance is. " + Vector2.Distance(pos, go.transform.position));
-                if (Vector2.Distance(pos, go.transform.position) > maxDistanceFromAnchor)
-                    return true;
-            }
+        //bool IsFarFromAttached() // Lmit of body
+        //{
+        //    Debug.Log("IsFarFromAttached");
+        //    Vector2 pos = bodyPart.transform.position;
+        //    foreach (BodyPart go in bodyPart.attachedTo)
+        //    {
+        //        Debug.Log("distance is. " + Vector2.Distance(pos, go.transform.position));
+        //        if (Vector2.Distance(pos, go.transform.position) > maxDistanceFromAnchor)
+        //            return true;
+        //    }
 
-            Debug.Log("IsFarFromAttached no");
-            return false;
-        }
+        //    Debug.Log("IsFarFromAttached no");
+        //    return false;
+        //}
         void AddReverse()
         {
             BodyPart bp = bodyPart.attachedTo[0];
@@ -177,10 +177,10 @@ namespace Box
             
             if (bodyPart != null)
             {
-                if (bodyPart.type != BodyPart.types.HEAD && IsFarFromAttached())
-                {
-                    AddReverse();
-                }
+                //if (bodyPart.type != BodyPart.types.HEAD && IsFarFromAttached())
+                //{
+                //    AddReverse();
+                //}
 
                 bodyPart.OnEndGrad();
                 bodyPart = null;

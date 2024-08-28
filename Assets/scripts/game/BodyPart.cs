@@ -102,6 +102,25 @@ namespace Box
         {
             characterManager.RecalculatePositions();
         }
+        Vector2 defensePos = Vector2.zero;
+        public void GoToOriginDefense()
+        {
+            if (type == types.HEAD) return;
+            Vector2 gotoPos = Vector2.zero;
+            if (type == types.HAND1) gotoPos = characterManager.GetHandDefensePos(1);
+            if (type == types.HAND2) gotoPos = characterManager.GetHandDefensePos(2);
+
+            if(Vector2.Distance(gotoPos, transform.position)>2)
+                defensePos = gotoPos;
+        }
+        void Update()
+        {
+            if (defensePos == Vector2.zero) return;
+            Vector2 newPos = Vector2.Lerp(transform.position, defensePos, 0.15f);
+            transform.position = newPos;
+            if (Vector2.Distance(transform.position, defensePos) < 0.01f)
+                defensePos = Vector2.zero;
+        }
         public virtual void Hit(Vector3 pos) { }
 
 

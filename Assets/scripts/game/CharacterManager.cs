@@ -107,5 +107,14 @@ namespace Box
                 bodyPart.Hit(my);
             }
         }
+        public void SendHandsToOriginDefense()
+        {
+            GetPart("HAND1").GoToOriginDefense();
+            GetPart("HAND2").GoToOriginDefense();
+        }
+        public Vector2 GetHandDefensePos(int handID)
+        {
+            return head.GetHandDefensePos(handID);
+        }
     }
 }

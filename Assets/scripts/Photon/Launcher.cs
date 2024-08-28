@@ -99,11 +99,10 @@ namespace Box.Photon
             LogFeedback("<Color=Green>OnJoinedRoom</Color> with " + PhotonNetwork.CurrentRoom.PlayerCount + " Player(s)");
             Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.\nFrom here on, your game would be running.");
 
-            if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+            if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
             {
-                Debug.Log("We load the 'Room for 1' ");
+                Debug.Log("We load the 'Room for 2 players' ");
                 PhotonNetwork.LoadLevel("Game");
-
             }
         }
     }

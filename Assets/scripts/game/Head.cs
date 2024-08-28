@@ -8,6 +8,7 @@ namespace Box
         [SerializeField] Transform headAsset;
         [SerializeField] Transform face;
         [SerializeField] Transform[] shoulders;
+        [SerializeField] Transform[] handscontainers;
         [SerializeField] LineRenderer[] arms;
 
         float _y;
@@ -80,6 +81,9 @@ namespace Box
             arms[0].SetPositions(new Vector3[] { shoulders[0].transform.position, attachedTo[0].transform.position });
             arms[1].SetPositions(new Vector3[] { shoulders[1].transform.position, attachedTo[1].transform.position });
         }
+        public Vector2 GetHandDefensePos(int handID)
+        {
+            return handscontainers[handID - 1].transform.position;
+        }
     }
-
 }

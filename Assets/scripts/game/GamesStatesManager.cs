@@ -1,5 +1,6 @@
 using Box.Photon;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 namespace Box
 {
@@ -12,6 +13,7 @@ namespace Box
         GameState play;
         GameState wait;
         GameState loading;
+        GameState gameover;
 
         public DBManager dbManager;
 
@@ -32,7 +34,8 @@ namespace Box
             MOVE_1,
             MOVE_2,
             WAITING,
-            PLAY
+            PLAY,
+            GAMEOVER
         }
         private void Awake()
         {
@@ -48,11 +51,13 @@ namespace Box
             play = new GameStatePlay();
             wait = new GameStateWait();
             loading = new GameStateLoading();
+            gameover = new GameStateGameOver();
 
-            loading.Initialize(this);
             move.Initialize(this);
             play.Initialize(this);
             wait.Initialize(this);
+            loading.Initialize(this);
+            gameover.Initialize(this);
 
             if (debugMode)
                 SetState(states.MOVE_1);
@@ -88,6 +93,8 @@ namespace Box
                 case states.PLAY:
                     dbManager.OnParseMovements();
                     active = play; break;
+                case states.GAMEOVER:
+                    active = gameover; break;
             }
             Events.SetText("new state: " + state + " from: " + this.state);
 

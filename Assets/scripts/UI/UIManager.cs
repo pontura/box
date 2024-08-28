@@ -12,15 +12,18 @@ namespace Box.UI
 
         [SerializeField] MovementUI movement;
         [SerializeField] PlayMoment playMoment;
+        [SerializeField] GameOverScreen gameOverScreen;
 
         private void Awake()
         {
             mInstance = this;
+            mainSignal = GetComponent<MainSignal>();
+            playMoment = GetComponent<PlayMoment>();
+            gameOverScreen = GetComponent<GameOverScreen>();
+
             Events.SetText += SetText;
             Events.UIMovement += UIMovement;
             Events.OnChangeState += OnChangeState;
-            mainSignal = GetComponent<MainSignal>();
-            playMoment = GetComponent<PlayMoment>();
         }
         private void OnDestroy()
         {
@@ -42,6 +45,11 @@ namespace Box.UI
                     movement.Reset();
                     playMoment.Init();
                     mainSignal.Init("ACTION!", OnMoveSignalDone);
+                    break;
+                case GamesStatesManager.states.GAMEOVER:
+                    movement.Reset();
+                    playMoment.Reset();
+                    gameOverScreen.Init(); 
                     break;
 
             }

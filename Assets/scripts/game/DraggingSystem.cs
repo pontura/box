@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting.FullSerializer;
 using UnityEditor;
 using UnityEngine;
+
 namespace Box
 {
     public class DraggingSystem
@@ -54,6 +55,7 @@ namespace Box
         public void Reset()
         {
             bodyPart = null;
+            StopDrag();
             state = states.NONE;
         }
         public void OnUpdate()
@@ -108,7 +110,6 @@ namespace Box
             lastPos = pos;
             state = states.DRAGGING;
             timerToDraw = 0;
-            Debug.Log("InitDrag " + IsFirstMove() + " timer: " + timer);
             SetTimer();
             AddToDraggedPieces();
         }
@@ -133,9 +134,6 @@ namespace Box
             if (timerToDraw > offsetTime)
             {
                 Vector2 pos = GetPos();
-
-                //bool isFarFromAnchor = IsFarFromAttached();
-                //if (isFarFromAnchor) return;
                 float distance = Vector2.Distance(pos, lastPos);
                 if (distance < maxDistanceAllowed && distance > offsetToDraw)
                     Draw(distance * effortByDistance, pos);
@@ -150,38 +148,10 @@ namespace Box
             if (pos.y > Settings.limits.y) pos.y = Settings.limits.y;
             return pos;
         }
-        //bool IsFarFromAttached() // Lmit of body
-        //{
-        //    Debug.Log("IsFarFromAttached");
-        //    Vector2 pos = bodyPart.transform.position;
-        //    foreach (BodyPart go in bodyPart.attachedTo)
-        //    {
-        //        Debug.Log("distance is. " + Vector2.Distance(pos, go.transform.position));
-        //        if (Vector2.Distance(pos, go.transform.position) > maxDistanceFromAnchor)
-        //            return true;
-        //    }
-
-        //    Debug.Log("IsFarFromAttached no");
-        //    return false;
-        //}
-        void AddReverse()
-        {
-            BodyPart bp = bodyPart.attachedTo[0];
-            Vector2 pos = bp.transform.position;
-            pos += (Vector2)bodyPart.transform.forward.normalized * 2f;
-            SetDraggedElement(pos);
-            Debug.Log("AddReverse " + pos);
-        }
         void StopDrag()
-        {
-            
+        {            
             if (bodyPart != null)
             {
-                //if (bodyPart.type != BodyPart.types.HEAD && IsFarFromAttached())
-                //{
-                //    AddReverse();
-                //}
-
                 bodyPart.OnEndGrad();
                 bodyPart = null;
             }
@@ -193,7 +163,6 @@ namespace Box
             SetDraggedElement(pos);
             if (distanceToEffort > totalDistanceToEffort)
             {
-                Debug.Log("ready");
                 StopDrag();
                 state = states.DONE;
                 if (OnDone != null)

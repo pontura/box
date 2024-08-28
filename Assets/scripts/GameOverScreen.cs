@@ -31,7 +31,6 @@ namespace Box.UI
         public void Reset()
         {
             panel.SetActive(false);
-
         }
     }
 }

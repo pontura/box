@@ -122,17 +122,18 @@ namespace Box
                 BodyPart hittedTo = CheckHitTo(bodyPart, k.pos, force);
                 if (hittedTo != null)
                 {
-                    if (hittedTo.type == BodyPart.types.HEAD)
-                    {
-                        bodyPart.MadeHit(true);
-                        ReverseMovements(ch, m, bodyPart);
-                        return;
-                    }
-                    else if (hittedTo.type == BodyPart.types.HAND1 || hittedTo.type == BodyPart.types.HAND2)
-                    {
-                        ChangeHandForwards(ch, m, bodyPart, hittedTo);
-                    }
+                    //if (hittedTo.type == BodyPart.types.HEAD)
+                    //{
+                    bodyPart.MadeHit(true);
+                    ReverseMovements(ch, m, bodyPart);
+                    //    return;
+                    //}
                 }
+                //else if (hittedTo.type == BodyPart.types.HAND1 || hittedTo.type == BodyPart.types.HAND2)    
+                //{
+                //    ChangeHandForwards(ch, m, bodyPart, hittedTo);
+                //}
+        // }
             }
         }
         void ReverseMovements(CharacterManager ch, MovementData.Movement m, BodyPart bodyPart)
@@ -168,15 +169,15 @@ namespace Box
             //}
             Move(m.keyframeActive, ch, m);
         }
-        void ChangeHandForwards(CharacterManager ch, MovementData.Movement m, BodyPart bodyPart, BodyPart bodyPartHitTo)
-        {
-            Vector2 diffVector = bodyPart.transform.position - bodyPartHitTo.transform.position;
-            for (int a = m.keyframeActive; a < m.keyframes.Count; a++)
-            {
-                MovementData.KeyFrameData k = m.keyframes[a];
-                k.pos += diffVector;
-            }
-        }
+        //void ChangeHandForwards(CharacterManager ch, MovementData.Movement m, BodyPart bodyPart, BodyPart bodyPartHitTo)
+        //{
+        //    Vector2 diffVector = bodyPart.transform.position - bodyPartHitTo.transform.position;
+        //    for (int a = m.keyframeActive; a < m.keyframes.Count; a++)
+        //    {
+        //        MovementData.KeyFrameData k = m.keyframes[a];
+        //        k.pos += diffVector;
+        //    }
+        //}
         public override void End()
         {
             base.End();

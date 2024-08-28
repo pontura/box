@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.Analytics;
+using UnityEngine.UIElements;
 
 namespace Box.UI
 {
@@ -6,12 +8,21 @@ namespace Box.UI
     {
         public ProgressBar player1;
         public ProgressBar player2;
-
+        bool isOver;
         private void Start()
         {
             Events.OnHit += OnHit;
             player1.SetValue(1);
             player2.SetValue(1);
+
+            player1.Init(1, OnGameOver);
+            player2.Init(1, OnGameOver);
+        }
+        void OnGameOver()
+        {
+            if (isOver) return;
+            isOver = true;
+            Events.OnChangeState(GamesStatesManager.states.GAMEOVER);
         }
         private void OnDestroy()
         {
@@ -32,5 +43,5 @@ namespace Box.UI
                 default: return player2;
             }
         }
-}
+    }
 }

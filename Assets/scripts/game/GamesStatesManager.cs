@@ -41,7 +41,7 @@ namespace Box
         {
 #if UNITY_EDITOR
 
-#elif UNITY_ANDROID
+#else
             debugMode = false;
 #endif
         }

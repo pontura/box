@@ -4,18 +4,34 @@ namespace Box
 {
     public class DragElement : MonoBehaviour
     {
-        void Start()
+        [SerializeField] GameObject asset;
+        [SerializeField] TrailRenderer trail;
+        private void Start()
         {
-
+            Reset();
         }
-        public void SetColor()
+        public void Init(Vector2 pos)
         {
-            Color c;
-            if (Settings.characterActive == 1)
-                c = Color.red;
-            else c = Color.blue;
-            c.a = 0.5f;
-            GetComponent<SpriteRenderer>().color = c;
+            print("Init");
+            asset.SetActive(true);
+            SetPos(pos);
+            trail.enabled = true;
+            trail.time = 0.2f;
+        }
+        public void Reset()
+        {
+            trail.time = 0f;
+            print("Reset");
+            asset.SetActive(false);
+            trail.enabled = false;
+        }
+        public void SetPos(Vector2 pos)
+        {
+            transform.position = pos;
+        }
+        public void SetColor(Color c)
+        {
+            //asset.GetComponent<MeshRenderer>().color = c;            
         }
 
     }

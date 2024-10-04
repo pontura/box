@@ -15,6 +15,8 @@ namespace Box
         GameState loading;
         GameState gameover;
 
+        public DragElement dragElement;
+
         public DBManager dbManager;
 
         public CharacterManager ch1;

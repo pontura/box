@@ -85,5 +85,9 @@ namespace Box
         {
             return handscontainers[handID - 1].transform.position;
         }
+        public Vector2 GetOpponentPos()
+        {
+            return lookAtAsset.transform.position;
+        }
     }
 }

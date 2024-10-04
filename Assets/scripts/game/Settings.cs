@@ -9,7 +9,7 @@ namespace Box
         public static Vector2 limits = new Vector2(5.5f, 3.2f);
 
         // DRAG:
-        public static int movementDuration = 8;
+        public static int movementDuration = 50;
         public static float offsetToDraw = 0.15f;
         public static float offsetTime = 0.025f;
         public static float maxDistanceFromAnchor = 5; // Arms length;

@@ -14,4 +14,8 @@ public class ButtonUI : MonoBehaviour
         Button button = GetComponent<Button>();
         button.onClick.AddListener(() => { OnClick(id); });
     }
+    public void SetText(string s)
+    {
+        field.text = s;
+    }
 }

@@ -9,7 +9,6 @@ namespace Box.UI
     {
         [SerializeField] GameObject panel;
         [SerializeField] ProgressBar progressBar;
-        [SerializeField] ProgressBar progressBar_moves;
         [SerializeField] ButtonUI readyBtn;
 
         float timer;
@@ -18,8 +17,9 @@ namespace Box.UI
         int timerTotal;
         float totalDistanceToEffort;
         float onInitRestoreBar;
-        float effort_player1;
-        float effort_player2;
+        [SerializeField] float value = 1;
+        [SerializeField] float value_player1;
+        [SerializeField] float value_player2;
 
         private void Awake()
         {
@@ -27,9 +27,8 @@ namespace Box.UI
             readyBtn.Init(OnReadyClicked);
             totalDistanceToEffort = Settings.totalDistanceToEffort;
             onInitRestoreBar = Settings.onInitRestoreBar;
-
-            effort_player1 = totalDistanceToEffort;
-            effort_player2 = totalDistanceToEffort;
+            value_player1 = 1;
+            value_player2 = 1;
         }
         private void OnDestroy()
         {
@@ -41,32 +40,11 @@ namespace Box.UI
         }
         private void OnMovementMade(int characterID, float distance)
         {
+            value -= distance / (float)totalDistanceToEffort;
             if (characterID == 1)
-            {
-                effort_player1 -= distance;
-                if (effort_player1 <= 0)
-                {
-                    End();
-                    effort_player1 = 0;
-                }
-            }
-            else if (characterID == 2)
-            {
-                effort_player2 -= distance;
-                if (effort_player2 <= 0)
-                {
-                    End();
-                    effort_player2 = 0;
-                }
-            }
-            SetValues(characterID);
-        }
-        void SetValues(int characterID)
-        {
-            if(characterID == 1)
-                progressBar_moves.SetValue((float)effort_player1 / (float)totalDistanceToEffort);
+                value_player1 = value;
             else
-                progressBar_moves.SetValue((float)effort_player2 / (float)totalDistanceToEffort);
+                value_player2 = value;
         }
         public void Reset()
         {
@@ -75,43 +53,40 @@ namespace Box.UI
         System.Action OnDone;
         public void Init(int characterID, int timerTotal, System.Action OnDone)
         {
-            Debug.Log("Move Init");
+            value = 1;
             if (characterID == 1)
             {
-                this.effort_player1 += totalDistanceToEffort * onInitRestoreBar;
-                if (effort_player1 > totalDistanceToEffort) effort_player1 = totalDistanceToEffort;
+                this.value_player1 += onInitRestoreBar;
+                if (value_player1 > 1) value_player1 = 1;
+                value = value_player1;
             }
             else
             {
-                this.effort_player2 += totalDistanceToEffort * onInitRestoreBar;
-                if (effort_player2 > totalDistanceToEffort) effort_player2 = totalDistanceToEffort;
+                this.value_player2 += onInitRestoreBar;
+                if (value_player2 > 1) value_player2 = 1;
+                value = value_player2;
             }
-            Debug.Log("characterID " + characterID + " this.effort_player1: " + this.effort_player1 + "   this.effort_player2: " + this.effort_player2);
             this.OnDone = OnDone;
             this.timerTotal = timerTotal;
             isOn = true;
             timer = timerTotal;
             this.characterID = characterID;
+            Color c;
             switch(characterID)
             {
-                case 1:
-                    progressBar_moves.SetColor(Color.red);
-                    break;
-                case 2:
-                    progressBar_moves.SetColor(Color.blue);
-                    break;
+                case 1: c = Color.red; break;
+                default: c = Color.blue; break;
             }
-            progressBar.SetValue(1);
+            c.a = 0.2f;
+            progressBar.SetColor(c);
 
             panel.SetActive(true);
-            SetValues(characterID);
+            
         }
         void Update()
         {
             if (!isOn) return;
-            if (timer <= 0)
-                End();
-            else
+
                 SetProgress();
         }
         void End()
@@ -124,13 +99,10 @@ namespace Box.UI
         }
         void SetProgress()
         {
-            timer -= Time.deltaTime;
-            if (timer > timerTotal)
-            {
+            value -= Time.deltaTime / timerTotal;
+            progressBar.SetValue(value);
+            if (value <= 0)
                 End();
-                timer = timerTotal;
-            }
-            progressBar.SetValue(timer / timerTotal);
         }
     }
 }

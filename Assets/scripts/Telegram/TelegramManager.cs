@@ -8,7 +8,8 @@ namespace Box
     {
         [SerializeField] TMPro.TMP_Text debugText;
         public string initData = "";
-        public string userData = "";
+        public string id = "";
+        public string userName = "";
         public string referral = "";
 
         static TelegramManager mInstance = null;
@@ -30,8 +31,8 @@ namespace Box
         }
         public void ReceiveUserData(string data) // comes from the js in the HTML
         {
-            debugText.text += data + " ";
-            this.userData = data;
+            ParseURL(data);
+            debugText.text += userName;
         }
         public void ReceiveReferral(string data)// comes from the js in the HTML
         {
@@ -43,6 +44,19 @@ namespace Box
         {
             debugText.text += data + " ";
             this.initData = data;
+        }
+        public void ParseURL(string text)
+        {
+            string[] arr;
+            arr = text.Split("?id=");
+            if (arr.Length < 2) return;
+            arr = arr[1].Split("&first_name=");
+            id = arr[0];
+            if (arr.Length < 2) return;
+            arr = arr[1].Split("&last_name=");
+            if (arr.Length < 2) return;
+            userName = arr[0];
+            if (arr.Length > 1) userName += " " + arr[1];
         }
     }
 }

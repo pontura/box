@@ -285,11 +285,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
-  ghosts: {fileID: 3508350442267109122}
   attachedTo:
   - {fileID: 4425193696159149056}
   - {fileID: 4908163103340511856}
-  dragElement: {fileID: 8962355593444916608, guid: 647ab2d5fdd0dcb45b2f2463dc6a8e2f, type: 3}
   characterID: 1
   initialPos: {x: 0, y: 0}
   hitAreaSize: 1
@@ -301,8 +299,8 @@ MonoBehaviour:
   - {fileID: 4910400414790792817}
   - {fileID: 3370882130361848905}
   handscontainers:
-  - {fileID: 8716241749163258656}
   - {fileID: 8708485658065990119}
+  - {fileID: 8716241749163258656}
   arms:
   - {fileID: 8372826439136410499}
   - {fileID: 1734115129773693880}
@@ -723,7 +721,7 @@ GameObject:
   - component: {fileID: 8791686174713051374}
   - component: {fileID: 1637805163214229978}
   m_Layer: 0
-  m_Name: handContainer2
+  m_Name: handContainer1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1158,10 +1156,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  ghosts: {fileID: 695810387684726050}
   attachedTo:
   - {fileID: 2798085863390972087}
-  dragElement: {fileID: 8962355593444916608, guid: 647ab2d5fdd0dcb45b2f2463dc6a8e2f, type: 3}
   characterID: 1
   initialPos: {x: 0, y: 0}
   hitAreaSize: 0.7
@@ -1323,7 +1319,7 @@ GameObject:
   - component: {fileID: 7202451830708680615}
   - component: {fileID: 1096692857130147870}
   m_Layer: 0
-  m_Name: handContainer1
+  m_Name: handContainer2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1736,10 +1732,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
-  ghosts: {fileID: 8481784223102860977}
   attachedTo:
   - {fileID: 2798085863390972087}
-  dragElement: {fileID: 8962355593444916608, guid: 647ab2d5fdd0dcb45b2f2463dc6a8e2f, type: 3}
   characterID: 1
   initialPos: {x: 0, y: 0}
   hitAreaSize: 0.7

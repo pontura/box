@@ -29,7 +29,12 @@ namespace Box
         float timerToDraw;
 
         List<BodyPart.types> draggedPieces;
+        DragElement dragElement;
 
+        public void SetDragElement(DragElement dragElement)
+        {
+            this.dragElement = dragElement;
+        }
         public void Init(DBManager dbManager)
         {
             Debug.Log("Init DraggingSystem");
@@ -54,8 +59,11 @@ namespace Box
         }
         public void Reset()
         {
-            bodyPart = null;
-            StopDrag();
+            if (bodyPart != null)
+            {
+                StopDrag();
+                bodyPart = null;
+            }         
             state = states.NONE;
         }
         public void OnUpdate()
@@ -84,6 +92,7 @@ namespace Box
                 }
                 if (bodyPart != null)
                 {
+                    dragElement.SetColor(bodyPart.Color);
                     return true;
                 }
             }
@@ -112,6 +121,7 @@ namespace Box
             timerToDraw = 0;
             SetTimer();
             AddToDraggedPieces();
+            dragElement.Init(GetPos());
         }
         void SetTimer()
         {
@@ -138,6 +148,7 @@ namespace Box
                 if (distance < maxDistanceAllowed && distance > offsetToDraw)
                     Draw(distance * effortByDistance, pos);
             }
+            dragElement.SetPos(GetPos());
         }
         Vector2 GetPos()
         {
@@ -152,8 +163,9 @@ namespace Box
         {            
             if (bodyPart != null)
             {
-                bodyPart.OnEndGrad();
+                bodyPart.OnEndGrad(GetPos());
                 bodyPart = null;
+                dragElement.Reset();               
             }
             state = states.NONE;
         }
@@ -174,7 +186,7 @@ namespace Box
         void SetDraggedElement(Vector2 pos)
         {
             lastPos = pos;
-            bodyPart.AddGost(lastPos);
+            //bodyPart.AddGost(lastPos);
             dbManager.SaveMovement(bodyPart.characterID, bodyPart.type.ToString(), pos, timer);
             if (timer > lastMovementTimer && bodyPart.type != BodyPart.types.HEAD) lastMovementTimer = timer;
         }

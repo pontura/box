@@ -109,8 +109,12 @@ namespace Box
         }
         public void SendHandsToOriginDefense()
         {
-            GetPart("HAND1").GoToOriginDefense();
-            GetPart("HAND2").GoToOriginDefense();
+            SendHandsToOriginDefenseByName("HAND1");
+            SendHandsToOriginDefenseByName("HAND2");
+        }
+        public void SendHandsToOriginDefenseByName(string partName)
+        {
+            GetPart(partName).GoToOriginDefense();
         }
         public Vector2 GetHandDefensePos(int handID)
         {

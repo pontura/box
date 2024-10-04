@@ -15,22 +15,18 @@ namespace Box
         }
         Collider2D collider;
         CharacterManager characterManager;
-        [SerializeField] Transform ghosts;
 
         public BodyPart[] attachedTo; // A que objeto está attached:
         public BodyPart[] GetAttachments() { return attachedTo; }
-        [SerializeField] DragElement dragElement;
-        List<DragElement> draggedElements;
         public int characterID;
         Material mat;
         Color color;
+        public Color Color { get { return color;  } }
         [SerializeField] Vector2 initialPos;
         public float hitAreaSize;
         Vector3 originalPos;
         private void Awake()
         {
-            //mat = GetComponent<Material>();
-            //color = mat.color;
             Events.OnChangeState += OnChangeState;
             collider = GetComponent<Collider2D>();
             originalPos = transform.position;
@@ -63,7 +59,6 @@ namespace Box
         public void Initializa(CharacterManager characterManager, int characterID)
         {
             this.characterID = characterID;
-            draggedElements = new List<DragElement>();
             this.characterManager = characterManager;
         }
         public void Init()
@@ -74,44 +69,38 @@ namespace Box
         {
             if (initialPos != Vector2.zero)
                 transform.position = initialPos;
-
-            ResetGhosts();
-        }
-        public void AddGost(Vector2 pos)
-        {
-            DragElement de = Instantiate(dragElement, ghosts);
-            de.transform.position = pos;
-            de.SetColor();
-            draggedElements.Add(de);
         }
         public void RecalculatePosition()
         {
-            if (draggedElements.Count > 0)
-            {
-                Vector3 dest = draggedElements[draggedElements.Count - 1].transform.position;
-                transform.position = new Vector3(dest.x, dest.y, transform.position.z);
-            }
-            ResetGhosts();
+            print("RecalculatePosition");
         }
-        private void ResetGhosts()
-        {
-            Utils.RemoveAllChildsIn(ghosts);
-            draggedElements.Clear();
-        }
-        public void OnEndGrad()
+        public void OnEndGrad(Vector2 pos)
         {
             characterManager.RecalculatePositions();
+            transform.position = new Vector3(pos.x, pos.y, transform.position.z);
         }
         Vector2 defensePos = Vector2.zero;
         public void GoToOriginDefense()
         {
             if (type == types.HEAD) return;
+
             Vector2 gotoPos = Vector2.zero;
             if (type == types.HAND1) gotoPos = characterManager.GetHandDefensePos(1);
             if (type == types.HAND2) gotoPos = characterManager.GetHandDefensePos(2);
+           
+            Vector2 opponentPos = GetOpponentPosition();
 
-            if(Vector2.Distance(gotoPos, transform.position)>2)
+            float distanceToHead = Vector2.Distance(characterManager.GetPart("HEAD").transform.position, opponentPos);
+            float distanceToHand = Vector2.Distance(transform.position, opponentPos);
+
+            if (distanceToHead < distanceToHand)
+            {
+                if (type == types.HAND1) defensePos = characterManager.GetHandDefensePos(1);
+                if (type == types.HAND2) defensePos = characterManager.GetHandDefensePos(2);
+            }
+            else if (Vector2.Distance(gotoPos, transform.position) > 2)
                 defensePos = gotoPos;
+            
         }
         void Update()
         {
@@ -127,5 +116,11 @@ namespace Box
         [SerializeField] bool hitted;
         public bool HasHitted() { return hitted; }
         public void MadeHit(bool hitted) { this.hitted = hitted; }
+
+        Vector2 GetOpponentPosition()
+        {
+            BodyPart headB = characterManager.GetPart("HEAD");
+            return headB.GetComponent<Head>().GetOpponentPos();
+        }
     }
 }

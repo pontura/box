@@ -11,9 +11,13 @@ namespace Box.Photon
     {
         [SerializeField]
         private GameObject controlPanel;
+        [SerializeField]
+        private ButtonUI submitBtn;
 
         [SerializeField]
         private Text feedbackText;
+        [SerializeField]
+        private InputField inputField;
 
         [SerializeField]
         private byte maxPlayersPerRoom = 4;
@@ -23,7 +27,6 @@ namespace Box.Photon
         private LoaderAnime loaderAnime;
 
         bool isConnecting;
-        string gameVersion = "1";
 
         void Awake()
         {
@@ -32,9 +35,28 @@ namespace Box.Photon
                 Debug.LogError("<Color=Red><b>Missing</b></Color> loaderAnime Reference.", this);
             }
             PhotonNetwork.AutomaticallySyncScene = true;
+            submitBtn.Init(Connect);
+            submitBtn.SetText("PLAY (v" + Application.version + ")");
         }
-
-        public void Connect()
+        private void Start()
+        {
+            Loop();
+        }
+        void Loop()
+        {
+            if(TelegramManager.Instance.userName != "")
+            {
+                SetUserNameFromTelegram();
+            } else
+            {
+                Invoke("Loop", 0.5f);
+            }
+        }
+        void SetUserNameFromTelegram()
+        {
+            inputField.text = TelegramManager.Instance.userName;
+        }
+        public void Connect(int id)
         {
             feedbackText.text = "";
             isConnecting = true;
@@ -55,7 +77,7 @@ namespace Box.Photon
             {
                 LogFeedback("Connecting...");
                 PhotonNetwork.ConnectUsingSettings();
-                PhotonNetwork.GameVersion = this.gameVersion;
+                PhotonNetwork.GameVersion = Application.version;
             }
         }
         void LogFeedback(string message)
@@ -99,11 +121,11 @@ namespace Box.Photon
             LogFeedback("<Color=Green>OnJoinedRoom</Color> with " + PhotonNetwork.CurrentRoom.PlayerCount + " Player(s)");
             Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.\nFrom here on, your game would be running.");
 
-            if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
-            {
+            //if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+            //{
                 Debug.Log("We load the 'Room for 2 players' ");
                 PhotonNetwork.LoadLevel("Game");
-            }
+           // }
         }
     }
 }
